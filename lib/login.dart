@@ -78,7 +78,6 @@ class _LoginState extends State<Login> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 0.0),
                 child: Container(
-                  height: 36,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey),
                     borderRadius: BorderRadius.circular(8)
@@ -120,7 +119,6 @@ class _LoginState extends State<Login> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 0.0),
                 child: Container(
-                  height: 36,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey),
                     borderRadius: BorderRadius.circular(8)
@@ -129,9 +127,10 @@ class _LoginState extends State<Login> {
                     padding: const EdgeInsets.only(left: 20.0),
                     child: TextField(
                       obscureText: _isSecurePassword,
+                      textAlignVertical: TextAlignVertical.center,
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: 'Enter your password', 
+                        hintText: 'Enter your password',
                         hintStyle: TextStyle(
                           color: Colors.grey,
                           fontSize: 12,
