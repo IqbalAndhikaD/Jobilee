@@ -163,7 +163,138 @@ class _HomeState extends State<Home> {
                     )
                   ],
                 )
-              ],)
+              ]),
+
+              const SizedBox(height: 24),
+
+              Row(
+                children: [
+                  Text('Browse Jobs',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: base,
+                      fontWeight: FontWeight.w900,
+                      fontFamily: 'GreycliffCF'
+                    ),
+                  ),
+                ],
+
+              ),
+
+              const SizedBox(height: 12),
+
+              // list
+              Flexible(
+                child: ListView.builder(
+                  itemCount: 10,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: Colors.grey[200],
+                            ),
+                            padding: const EdgeInsets.all(8),
+                            child: const Image(
+                              image: AssetImage('assets/images/tesla.png'),
+                              height: 50,
+                              width: 50,
+                            ),
+                          ),
+
+                          Flexible(
+                            child: ListTile(
+                              title: Text('Product Manager',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: base,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'GreycliffCF'
+                                ),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Tesla',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: base,
+                                      fontWeight: FontWeight.normal,
+                                      fontFamily: 'GreycliffCF'
+                                    ),
+                                  ),
+
+                                  const Text('+300 Applicants',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.normal,
+                                      fontFamily: 'GreycliffCF'
+                                    ),
+                                  ),
+                                  
+                                  const SizedBox(height: 6),
+
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(4),
+                                              color: dpurple,
+                                            ),
+                                            child: const Text('Contract',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 9,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'GreycliffCF'
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                                        child: Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(4),
+                                              color: yellow,
+                                            ),
+                                            child: Text('Full-time',
+                                              style: TextStyle(
+                                                color: base,
+                                                fontSize: 9,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'GreycliffCF'
+                                              ),
+                                            ),
+                                          ),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                              trailing: Icon(
+                                Icons.arrow_forward_ios,
+                                color: lblue,
+                              ),
+                            ),
+                          )
+                        ],
+                      )
+                    );
+                  },
+                ),
+              )
             ],
           )
         )
