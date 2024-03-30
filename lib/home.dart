@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_profile_picture/flutter_profile_picture.dart';
+import 'package:tubes/rsc/colors.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key, required this.title});
@@ -15,14 +17,350 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(actions: [
+      // appBar: AppBar(actions: [
 
-      ],),
-      body: SafeArea(  
+      // ],),
+      body: SafeArea(
         child: Container(
-          child: Text('text'),
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    textDirection: TextDirection.ltr,
+                    children: [
+                      ProfilePicture(
+                        name: 'Jane Doe',
+                        radius: 28,
+                        fontsize: 20,
+                        img: 'https://media.licdn.com/dms/image/C4D03AQFw3pddUPgL3Q/profile-displayphoto-shrink_100_100/0/1653903805288?e=1717027200&v=beta&t=Sx1Bk5eJaRvflRBZjS7bOe6J5Yc8MF-exLpa6NfDlhc',
+                      ),
+                    ],
+                  ),
+
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(0),
+                        child: SizedBox(
+                          child: TextButton(
+                            style: TextButton.styleFrom(
+                              backgroundColor: bblue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(99),
+                              ),
+                            ),
+                            onPressed: () => _showNotifications(context),
+                            child: Icon(
+                              Icons.notifications_none_outlined,
+                              color: lblue,
+                              size: 24,
+                            )
+                          )
+                        )
+                      )
+                    ],
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+
+              Row(
+                children: [
+                  Text('Hello, Jane',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: base,
+                      fontWeight: FontWeight.w900,
+                      fontFamily: 'GreycliffCF'
+                    ),
+                  ),
+                ],
+              ),
+
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(999),
+                      color: lblue,
+                    ),
+                    child: const Text('Fresh Graduate',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'GreycliffCF'
+                      ),
+                    ),
+                  )
+                ],
+              ),
+
+              const SizedBox(height: 24),
+
+              Row(children: <Widget>[
+                Flexible(
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 40,
+                        child: TextField(
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[800],
+                            fontFamily: 'GreycliffCF'
+                          ),
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.grey[200],
+                            border: InputBorder.none,
+                            hintText: 'Search job, company, post and others...', 
+                            hintStyle: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 11,
+                              fontFamily: 'GreycliffCF'
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(25.7),
+                            ),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(25.7),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(999),
+                          color: lblue,
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                          child: Icon(
+                            Icons.search,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                )
+              ]),
+
+              const SizedBox(height: 24),
+
+              Card(
+                elevation: 0,
+                color: bblue,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          children: [
+                            RichText(
+                              text: TextSpan(
+                                style: TextStyle(
+                                  fontSize: 28,
+                                  color: base,
+                                  fontWeight: FontWeight.w900,
+                                  fontFamily: 'GreycliffCF',
+                                ),
+                                children: [
+                                  const TextSpan(text: "Looks Like You're Open to"),
+                                  TextSpan(
+                                    text: ' Opportunity!',
+                                    style: TextStyle(
+                                      color: lblue
+                                    )
+                                  )
+                                ]
+                              )
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          children: [
+                            Text("",
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: base,
+                                fontWeight: FontWeight.w900,
+                                fontFamily: 'GreycliffCF',
+                              ),
+                            ),
+                          ]
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              Row(
+                children: [
+                  Text('Browse Jobs',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: base,
+                      fontWeight: FontWeight.w900,
+                      fontFamily: 'GreycliffCF'
+                    ),
+                  ),
+                ],
+
+              ),
+
+              const SizedBox(height: 12),
+
+              // list
+              Flexible(
+                child: ListView.builder(
+                  itemCount: 10,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      color: Colors.white,
+                      elevation: 0,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: Colors.grey[200],
+                              ),
+                              padding: const EdgeInsets.all(8),
+                              child: const Image(
+                                image: AssetImage('assets/images/tesla.png'),
+                                height: 50,
+                                width: 50,
+                              ),
+                            ),
+
+                            Flexible(
+                              child: ListTile(
+                                title: Text('Product Manager',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: base,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'GreycliffCF'
+                                  ),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Tesla',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: base,
+                                        fontWeight: FontWeight.normal,
+                                        fontFamily: 'GreycliffCF'
+                                      ),
+                                    ),
+
+                                    const Text('+300 Applicants',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                        fontWeight: FontWeight.normal,
+                                        fontFamily: 'GreycliffCF'
+                                      ),
+                                    ),
+                                    
+                                    const SizedBox(height: 6),
+
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Column(
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(4),
+                                                color: dpurple,
+                                              ),
+                                              child: const Text('Contract',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 9,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'GreycliffCF'
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                                          child: Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(4),
+                                                color: yellow,
+                                              ),
+                                              child: Text('Full-time',
+                                                style: TextStyle(
+                                                  color: base,
+                                                  fontSize: 9,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'GreycliffCF'
+                                                ),
+                                              ),
+                                            ),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                                trailing: Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: lblue,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                    );
+                  },
+                ),
+              )
+            ],
+          )
+        )
         ),
-      ),
       bottomNavigationBar: BottomNavigationBar(
         unselectedItemColor: Colors.grey,
         fixedColor: Colors.blue,
@@ -51,6 +389,26 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _showNotifications(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Notifications'),
+          content: const Text('You have no new notifications.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
