@@ -1,7 +1,7 @@
 // ignore_for_file: use_super_parameters, prefer_const_literals_to_create_immutables, prefer_const_constructors, sized_box_for_whitespace
 
 import 'package:flutter/material.dart';
-import 'package:tubes/home.dart';
+import 'package:tubes/navbar.dart';
 import 'package:tubes/register.dart';
 import 'package:tubes/rsc/colors.dart';
 
@@ -18,6 +18,7 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Container(
           margin: const EdgeInsets.all(38),
@@ -159,7 +160,7 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => Home(title: 'Welcome to Jobilee',) ,));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => NavBar() ,));
                     },
                     child: Text('Login',
                       style: TextStyle(

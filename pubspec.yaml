@@ -63,6 +63,8 @@ flutter:
   assets:
     - assets/images/jobilee.png
     - assets/images/tesla.png
+    - assets/images/vktr.png
+    - assets/images/box.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
