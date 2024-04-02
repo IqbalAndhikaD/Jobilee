@@ -18,6 +18,7 @@ class _LoginState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Container(
           margin: const EdgeInsets.all(38),
@@ -106,6 +107,45 @@ class _LoginState extends State<Register> {
               ),
               SizedBox(height: 13,),
 
+              // Email Sub-Title
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text('Email', style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'GreycliffCF'
+                  ),),
+                ]
+              ),
+              SizedBox(height: 9,),
+
+
+              // Username Field
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8)
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20.0),
+                    child: TextField(
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Enter your email', 
+                        hintStyle: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                          fontFamily: 'GreycliffCF'
+                        )
+                      ),
+                    ),
+                  ),
+                ), 
+              ),
+              SizedBox(height: 13,),
 
               // Password Sub-Title 
               Row(

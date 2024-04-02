@@ -2,19 +2,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
-import 'package:tubes/applyjob.dart';
-import 'package:tubes/navbar.dart';
 import 'package:tubes/rsc/colors.dart';
 
-class Home extends StatefulWidget {
-  const Home({super.key, required this.title});
-  final String title;
+class Apply extends StatefulWidget {
+  const Apply({super.key});
+  
 
   @override
-  State<Home> createState() => _HomeState();
+  State<Apply> createState() => _ApplyState();
 }
 
-class _HomeState extends State<Home> {
+class _ApplyState extends State<Apply> {
   int myIndex = 0;
   List<Widget> widgetList = const [
   ];
@@ -37,6 +35,7 @@ class _HomeState extends State<Home> {
                 child: Stack(
                   children: [
                     const Row(
+                      
                       mainAxisAlignment: MainAxisAlignment.start,
                       textDirection: TextDirection.ltr,
                       children: [
@@ -186,80 +185,13 @@ class _HomeState extends State<Home> {
                   ],
                 )
               ]),
-              const SizedBox(height: 16),
-
-                  // Box Find Jobs
-              Container(
-                height: 200,
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/box.png')
-                  )
-                ),
-
-                child: Stack(
-                  children: [
-                    Container(
-                      //color: Colors.red.withOpacity(0.2),
-                      margin: const EdgeInsets.only(right: 175, left: 25, top: 40, bottom: 0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-
-                          RichText(
-                            text: TextSpan(
-                              style: TextStyle(
-                                fontSize: 24,
-                                color: base,
-                                fontWeight: FontWeight.w900,
-                                fontFamily: 'GreycliffCF',
-                              ),
-                              children: [
-                                const TextSpan(text: "Looks Like \nYou're Open to"),
-                                TextSpan(
-                                  text: ' Opportunity!',
-                                  style: TextStyle(
-                                    color: lblue
-                                  )
-                                )
-                              ]
-                            ), 
-                          ),
-                          SizedBox(height: 10,),
-                          
-                          TextButton(
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.all(11),
-                              fixedSize: Size(170, 0),
-                              backgroundColor: lblue,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                            ),
-                            onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => NavBar() ,));
-                            }, 
-                            child: Text('Find Jobs',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'GreycliffCF',
-                                fontWeight: FontWeight.w600 
-                              ),
-                            )
-                          )
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
+             
               const SizedBox(height: 24),
 
                   // Browse Jobs
               Row(
                 children: [
-                  Text('Browse Jobs',
+                  Text('My Applications',
                     style: TextStyle(
                       fontSize: 18,
                       color: base,
@@ -270,14 +202,12 @@ class _HomeState extends State<Home> {
                 ],
 
               ),
-              
-              
               const SizedBox(height: 12),
 
                   // list
               Flexible(
                 child: ListView.builder(
-                  itemCount: 10,
+                  itemCount: 4,
                   itemBuilder: (context, index) {
                     return Card(
                       color: Colors.white,
@@ -321,16 +251,6 @@ class _HomeState extends State<Home> {
                                         fontFamily: 'GreycliffCF'
                                       ),
                                     ),
-
-                                    const Text('+300 Applicants',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                        fontWeight: FontWeight.normal,
-                                        fontFamily: 'GreycliffCF'
-                                      ),
-                                    ),
-                                    
                                     const SizedBox(height: 6),
 
                                     Row(
@@ -342,11 +262,11 @@ class _HomeState extends State<Home> {
                                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                               decoration: BoxDecoration(
                                                 borderRadius: BorderRadius.circular(4),
-                                                color: dpurple,
+                                                color: pblue,
                                               ),
-                                              child: const Text('Contract',
+                                              child: const Text('Pending',
                                                 style: TextStyle(
-                                                  color: Colors.white,
+                                                  color: Colors.blue,
                                                   fontSize: 9,
                                                   fontWeight: FontWeight.bold,
                                                   fontFamily: 'GreycliffCF'
@@ -355,30 +275,11 @@ class _HomeState extends State<Home> {
                                             )
                                           ],
                                         ),
-
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                                          child: Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(4),
-                                                color: yellow,
-                                              ),
-                                              child: Text('Full-time',
-                                                style: TextStyle(
-                                                  color: base,
-                                                  fontSize: 9,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontFamily: 'GreycliffCF'
-                                                ),
-                                              ),
-                                            ),
-                                        ),
                                       ],
-                                    ),
+                                    )
                                   ],
                                 ),
-
+                                
                                 trailing: TextButton(
                                   style: TextButton.styleFrom(            
                                     backgroundColor: lblue,
@@ -387,17 +288,18 @@ class _HomeState extends State<Home> {
                                     ),
                                   ),
                                   onPressed: () {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => ApplyJob() ,));       
+                                    
                                   }, 
-                                  child: Text('Apply',
+                                  child: Text('See Details',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontFamily: 'GreycliffCF',
                                       fontSize: 10,
                                       fontWeight: FontWeight.w600 
                                     ),
-                                  ),
-                                ), 
+                                  )
+                                )
+
                               ),
                             )
                           ],
