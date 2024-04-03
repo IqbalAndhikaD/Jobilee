@@ -295,8 +295,8 @@ class _HomeState extends State<Home> {
                               padding: const EdgeInsets.all(8),
                               child: const Image(
                                 image: AssetImage('assets/images/tesla.png'),
-                                height: 50,
-                                width: 50,
+                                height: 35,
+                                width: 35,
                               ),
                             ),
 
@@ -304,7 +304,7 @@ class _HomeState extends State<Home> {
                               child: ListTile(
                                 title: Text('Product Manager',
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     color: base,
                                     fontWeight: FontWeight.bold,
                                     fontFamily: 'GreycliffCF'
@@ -315,7 +315,7 @@ class _HomeState extends State<Home> {
                                   children: [
                                     Text('Tesla',
                                       style: TextStyle(
-                                        fontSize: 14,
+                                        fontSize: 12,
                                         color: base,
                                         fontWeight: FontWeight.normal,
                                         fontFamily: 'GreycliffCF'
@@ -324,7 +324,7 @@ class _HomeState extends State<Home> {
 
                                     const Text('+300 Applicants',
                                       style: TextStyle(
-                                        fontSize: 12,
+                                        fontSize: 10,
                                         color: Colors.grey,
                                         fontWeight: FontWeight.normal,
                                         fontFamily: 'GreycliffCF'
@@ -378,26 +378,61 @@ class _HomeState extends State<Home> {
                                     ),
                                   ],
                                 ),
+                                trailing: Wrap(
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  alignment: WrapAlignment.spaceBetween,
+                                  direction: Axis.horizontal,
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(right: 8),
+                                          child: TextButton(
+                                            style: TextButton.styleFrom(            
+                                              backgroundColor: lblue,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(20),
+                                              ),
+                                              minimumSize: Size(60, 0),
+                                            ),
+                                            onPressed: () {
+                                              Navigator.push(context, MaterialPageRoute(builder: (context) => ApplyJob() ,));       
+                                            }, 
+                                            child: const Text('Apply',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontFamily: 'GreycliffCF',
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w600 
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
 
-                                trailing: TextButton(
-                                  style: TextButton.styleFrom(            
-                                    backgroundColor: lblue,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
+                                    Column(
+                                      children: [
+                                        Ink(
+                                          width: 40,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: bblue,
+                                          ),
+                                          child: IconButton(
+                                            icon: Icon(Icons.bookmark_border_outlined),
+                                            color: lblue,
+                                            iconSize: 20,
+                                            onPressed: () {
+
+                                            },
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => ApplyJob() ,));       
-                                  }, 
-                                  child: Text('Apply',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontFamily: 'GreycliffCF',
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w600 
-                                    ),
-                                  ),
-                                ), 
+                                  ],
+                                )
                               ),
                             )
                           ],
