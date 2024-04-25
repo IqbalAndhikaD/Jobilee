@@ -1,22 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
+import 'package:tubes/applyjob.dart';
 import 'package:tubes/rsc/colors.dart';
 
-class Saved extends StatefulWidget {
-  const Saved({super.key});
+class Find extends StatefulWidget {
+  const Find({super.key});
 
   @override
-  State<Saved> createState() => _SavedState();
+  State<Find> createState() => _FindState();
 }
 
-class _SavedState extends State<Saved> {
+class _FindState extends State<Find> {
   int myIndex = 0;
   List<Widget> widgetList = const [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // appBar: AppBar(actions: [
+
+      // ],),
       body: SafeArea(
           child: Container(
               padding: const EdgeInsets.all(12),
@@ -24,6 +27,7 @@ class _SavedState extends State<Saved> {
                 children: [
                   // PP-Nama-Notif
                   Container(
+                    //color: Colors.black.withOpacity(0.2),
                     height: 60,
                     width: MediaQuery.of(context).size.width,
                     child: Stack(
@@ -45,6 +49,7 @@ class _SavedState extends State<Saved> {
 
                         //Nama & Graduate
                         Container(
+                          //color: Colors.red.withOpacity(0.2),
                           margin: const EdgeInsets.only(
                               right: 65, left: 85, top: 3, bottom: 0),
                           child: Column(
@@ -187,7 +192,7 @@ class _SavedState extends State<Saved> {
                   Row(
                     children: [
                       Text(
-                        'Saved Jobs',
+                        'Find Jobs',
                         style: TextStyle(
                             fontSize: 18,
                             color: base,
@@ -201,7 +206,7 @@ class _SavedState extends State<Saved> {
                   // list
                   Flexible(
                     child: ListView.builder(
-                      itemCount: 4,
+                      itemCount: 10,
                       itemBuilder: (context, index) {
                         return Card(
                             color: Colors.white,
@@ -221,40 +226,75 @@ class _SavedState extends State<Saved> {
                                     child: const Image(
                                       image:
                                           AssetImage('assets/images/tesla.png'),
-                                      height: 50,
-                                      width: 50,
+                                      height: 35,
+                                      width: 35,
                                     ),
                                   ),
                                   Flexible(
                                     child: ListTile(
-                                      title: Text(
-                                        'Product Manager',
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            color: base,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'GreycliffCF'),
-                                      ),
-                                      subtitle: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Tesla',
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                color: base,
-                                                fontWeight: FontWeight.normal,
-                                                fontFamily: 'GreycliffCF'),
-                                          ),
-                                          const SizedBox(height: 6),
-                                          Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Column(
-                                                children: [
-                                                  Container(
+                                        title: Text(
+                                          'Product Manager',
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: base,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'GreycliffCF'),
+                                        ),
+                                        subtitle: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Tesla',
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: base,
+                                                  fontWeight: FontWeight.normal,
+                                                  fontFamily: 'GreycliffCF'),
+                                            ),
+                                            const Text(
+                                              '+300 Applicants',
+                                              style: TextStyle(
+                                                  fontSize: 10,
+                                                  color: Colors.grey,
+                                                  fontWeight: FontWeight.normal,
+                                                  fontFamily: 'GreycliffCF'),
+                                            ),
+                                            const SizedBox(height: 6),
+                                            Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Column(
+                                                  children: [
+                                                    Container(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 8,
+                                                          vertical: 4),
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(4),
+                                                        color: dpurple,
+                                                      ),
+                                                      child: const Text(
+                                                        'Contract',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 9,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontFamily:
+                                                                'GreycliffCF'),
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(horizontal: 4),
+                                                  child: Container(
                                                     padding: const EdgeInsets
                                                         .symmetric(
                                                         horizontal: 8,
@@ -263,66 +303,91 @@ class _SavedState extends State<Saved> {
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               4),
-                                                      color: dpurple,
+                                                      color: yellow,
                                                     ),
-                                                    child: const Text(
-                                                      'Contract',
+                                                    child: Text(
+                                                      'Full-time',
                                                       style: TextStyle(
-                                                          color: Colors.white,
+                                                          color: base,
                                                           fontSize: 9,
                                                           fontWeight:
                                                               FontWeight.bold,
                                                           fontFamily:
                                                               'GreycliffCF'),
                                                     ),
-                                                  )
-                                                ],
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 4),
-                                                child: Container(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 4),
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            4),
-                                                    color: yellow,
-                                                  ),
-                                                  child: Text(
-                                                    'Full-time',
-                                                    style: TextStyle(
-                                                        color: base,
-                                                        fontSize: 9,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontFamily:
-                                                            'GreycliffCF'),
                                                   ),
                                                 ),
-                                              ),
-                                            ],
-                                          )
-                                        ],
-                                      ),
-
-                                      trailing: Ink(
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: bblue,
+                                              ],
+                                            ),
+                                          ],
                                         ),
-                                        child: IconButton(
-                                          icon: Icon(Icons.bookmark),
-                                          color: lblue,
-                                          onPressed: () {},
-                                        ),
-                                      ),
-                                      
-                                    ),
+                                        trailing: Wrap(
+                                          crossAxisAlignment:
+                                              WrapCrossAlignment.center,
+                                          alignment: WrapAlignment.spaceBetween,
+                                          direction: Axis.horizontal,
+                                          children: [
+                                            Column(
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          right: 8),
+                                                  child: TextButton(
+                                                    style: TextButton.styleFrom(
+                                                      backgroundColor: lblue,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(20),
+                                                      ),
+                                                      minimumSize: Size(60, 0),
+                                                    ),
+                                                    onPressed: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder:
+                                                                (context) =>
+                                                                    ApplyJob(),
+                                                          ));
+                                                    },
+                                                    child: const Text(
+                                                      'Apply',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontFamily:
+                                                              'GreycliffCF',
+                                                          fontSize: 10,
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                    ),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                            Column(
+                                              children: [
+                                                Ink(
+                                                  width: 40,
+                                                  height: 40,
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: bblue,
+                                                  ),
+                                                  child: IconButton(
+                                                    icon: Icon(Icons
+                                                        .bookmark_border_outlined),
+                                                    color: lblue,
+                                                    iconSize: 20,
+                                                    onPressed: () {},
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        )),
                                   )
                                 ],
                               ),
