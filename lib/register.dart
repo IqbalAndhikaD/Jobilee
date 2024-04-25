@@ -3,10 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:tubes/home.dart';
 import 'package:tubes/login.dart';
+import 'package:tubes/navbar.dart';
 import 'package:tubes/rsc/colors.dart';
 
 class Register extends StatefulWidget {
-  const Register ({Key? key}) : super(key: key);
+  const Register({Key? key}) : super(key: key);
 
   @override
   State<Register> createState() => _LoginState();
@@ -25,150 +26,153 @@ class _LoginState extends State<Register> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-
               // Title
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Text('SIGN UP', style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.w900,
-                    fontFamily: 'GreycliffCF'
-                  ),),
+                  Text(
+                    'SIGN UP',
+                    style: TextStyle(
+                        fontSize: 36,
+                        fontWeight: FontWeight.w900,
+                        fontFamily: 'GreycliffCF'),
+                  ),
                 ],
               ),
-              SizedBox(height: 5,),
-
+              SizedBox(
+                height: 5,
+              ),
 
               // Sub-Title
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text('Create your ', style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'GreycliffCF'
-                  ),),
-                  Text('Jobilee ', style: TextStyle(
-                    color: lblue,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: 'GreycliffCF'
-                  ),),
-                  Text('Account', style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'GreycliffCF'
-                  ),)
-                ]
+              Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                Text(
+                  'Create your ',
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'GreycliffCF'),
+                ),
+                Text(
+                  'Jobilee ',
+                  style: TextStyle(
+                      color: lblue,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'GreycliffCF'),
+                ),
+                Text(
+                  'Account',
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'GreycliffCF'),
+                )
+              ]),
+              SizedBox(
+                height: 33,
               ),
-              SizedBox(height: 33,),
-
 
               // Username Sub-Title
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text('Username', style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'GreycliffCF'
-                  ),),
-                ]
+              Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                Text(
+                  'Username',
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'GreycliffCF'),
+                ),
+              ]),
+              SizedBox(
+                height: 9,
               ),
-              SizedBox(height: 9,),
-
 
               // Username Field
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 0.0),
                 child: Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(8)
-                  ),
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8)),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 20.0),
                     child: TextField(
                       decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Enter your username', 
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                          fontFamily: 'GreycliffCF'
-                        )
-                      ),
+                          border: InputBorder.none,
+                          hintText: 'Enter your username',
+                          hintStyle: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                              fontFamily: 'GreycliffCF')),
                     ),
                   ),
-                ), 
+                ),
               ),
-              SizedBox(height: 13,),
+              SizedBox(
+                height: 13,
+              ),
 
               // Email Sub-Title
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text('Email', style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'GreycliffCF'
-                  ),),
-                ]
+              Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                Text(
+                  'Email',
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'GreycliffCF'),
+                ),
+              ]),
+              SizedBox(
+                height: 9,
               ),
-              SizedBox(height: 9,),
-
 
               // Username Field
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 0.0),
                 child: Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(8)
-                  ),
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8)),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 20.0),
                     child: TextField(
                       decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Enter your email', 
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                          fontFamily: 'GreycliffCF'
-                        )
-                      ),
+                          border: InputBorder.none,
+                          hintText: 'Enter your email',
+                          hintStyle: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                              fontFamily: 'GreycliffCF')),
                     ),
                   ),
-                ), 
+                ),
               ),
-              SizedBox(height: 13,),
-
-              // Password Sub-Title 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text('Password', style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'GreycliffCF'
-                  ),),
-                ]
+              SizedBox(
+                height: 13,
               ),
-              SizedBox(height: 9,),
 
+              // Password Sub-Title
+              Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                Text(
+                  'Password',
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'GreycliffCF'),
+                ),
+              ]),
+              SizedBox(
+                height: 9,
+              ),
 
               // Password Field
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 0.0),
                 child: Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(8)
-                  ),
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8)),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 20.0),
                     child: TextField(
@@ -176,20 +180,20 @@ class _LoginState extends State<Register> {
                       textAlignVertical: TextAlignVertical.center,
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: 'Enter your password', 
+                        hintText: 'Enter your password',
                         hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                          fontFamily: 'GreycliffCF'
-                        ),
+                            color: Colors.grey,
+                            fontSize: 12,
+                            fontFamily: 'GreycliffCF'),
                         suffixIcon: togglePassword(),
                       ),
                     ),
                   ),
-                ), 
+                ),
               ),
-              SizedBox(height: 33,),
-
+              SizedBox(
+                height: 33,
+              ),
 
               // Button Sign Up Jobilee
               Padding(
@@ -204,10 +208,9 @@ class _LoginState extends State<Register> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => Home(title: 'Jobile',) ,));
-                    },
-                    child: Text('Sign Up',
+                    onPressed: () => _registNotifications(context),
+                    child: Text(
+                      'Sign Up',
                       style: TextStyle(
                         fontSize: 17,
                         color: Colors.white,
@@ -220,23 +223,21 @@ class _LoginState extends State<Register> {
               ),
               SizedBox(height: 16),
 
-
               // Text "Already have an account?"
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Already have an account?', 
+                  Text(
+                    'Already have an account?',
                     style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      fontFamily: 'GreycliffCF'
-                    ),
+                        color: Colors.grey,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: 'GreycliffCF'),
                   ),
                 ],
               ),
               SizedBox(height: 16),
-
 
               // Button Login
               Padding(
@@ -247,40 +248,98 @@ class _LoginState extends State<Register> {
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.all(9),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        side: BorderSide(color: lblue)
-                      ),
+                          borderRadius: BorderRadius.circular(8),
+                          side: BorderSide(color: lblue)),
                     ),
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => Login() ,));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Login(),
+                          ));
                     },
-                    child: Text('Login',
+                    child: Text(
+                      'Login',
                       style: TextStyle(
-                        fontSize: 17,
-                        color: lblue,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'GreycliffCF'
-                      ),
+                          fontSize: 17,
+                          color: lblue,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'GreycliffCF'),
                     ),
                   ),
                 ),
               ),
-
-
             ],
-            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget togglePassword () {
-    return IconButton(onPressed: () {
-      setState(() {
-              _isSecurePassword = !_isSecurePassword;
-      });
-    }, icon: _isSecurePassword ? Icon(Icons.visibility) : Icon(Icons.visibility_off),
+  Widget togglePassword() {
+    return IconButton(
+      onPressed: () {
+        setState(() {
+          _isSecurePassword = !_isSecurePassword;
+        });
+      },
+      icon: _isSecurePassword
+          ? Icon(Icons.visibility)
+          : Icon(Icons.visibility_off),
       color: lblue,
+    );
+  }
+
+  Future<void> _registNotifications(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          icon: Icon(
+            Icons.task_alt_rounded,
+            size: 150,
+            color: lblue,
+          ),
+          title: const Text(
+            'Sign Up Successfully',
+            style: TextStyle(
+                color: Colors.black,
+                fontFamily: 'GreycliffCF',
+                fontWeight: FontWeight.w600),
+          ),
+          content: const Text(
+            'Your account has been created. You may now log in to access your account.',
+            textAlign: TextAlign.center,
+          ),
+          actions: <Widget>[
+            TextButton(
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.all(10),
+                  fixedSize: Size(340, 0),
+                  backgroundColor: lblue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Login(),
+                      ));
+                },
+                child: Text(
+                  'Confirm',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'GreycliffCF',
+                      fontWeight: FontWeight.w600),
+                )),
+          ],
+        );
+      },
     );
   }
 }
