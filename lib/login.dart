@@ -30,7 +30,10 @@ class _LoginState extends State<Login> {
       Fluttertoast.showToast(msg: "Successful");
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => NavBar(index: 0,)),
+        MaterialPageRoute(
+            builder: (context) => NavBar(
+                  index: 0,
+                )),
       );
     } catch (e) {
       final errorMsg = AuthException.generateExceptionMessage(e);

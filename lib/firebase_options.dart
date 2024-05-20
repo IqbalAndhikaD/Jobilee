@@ -17,16 +17,16 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -49,20 +49,23 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyA1PrFqzfoYn-oRbMZwkgTRLXS9ssf_Cf8',
-    appId: '1:493983065728:android:3712a7066e98bbc880a865',
-    messagingSenderId: '493983065728',
-    projectId: 'testauth-10cce',
-    storageBucket: 'testauth-10cce.appspot.com',
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyDeUY6e4vV7Om-H4UTFNC5ZbPc-TliZwns',
+    appId: '1:691096045938:web:966681dba333bf99f1f5eb',
+    messagingSenderId: '691096045938',
+    projectId: 'jobilee-9c76b',
+    authDomain: 'jobilee-9c76b.firebaseapp.com',
+    databaseURL: 'https://jobilee-9c76b-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'jobilee-9c76b.appspot.com',
+    measurementId: 'G-826EXDC8F9',
   );
 
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCP0oX6P3FvsibnFhEMSynGUj7_tDrud8k',
-    appId: '1:493983065728:ios:7b49950654b1014580a865',
-    messagingSenderId: '493983065728',
-    projectId: 'testauth-10cce',
-    storageBucket: 'testauth-10cce.appspot.com',
-    iosBundleId: 'com.example.tubes',
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyCnxAWxCA5gxFI2HV4DWf_Ag7vsaB498z4',
+    appId: '1:691096045938:android:13dd41c1cb5ee698f1f5eb',
+    messagingSenderId: '691096045938',
+    projectId: 'jobilee-9c76b',
+    databaseURL: 'https://jobilee-9c76b-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'jobilee-9c76b.appspot.com',
   );
 }

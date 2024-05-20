@@ -6,6 +6,7 @@ import 'package:tubes/applyjob.dart';
 import 'package:tubes/find.dart';
 import 'package:tubes/navbar.dart';
 import 'package:tubes/rsc/colors.dart';
+import 'package:tubes/authentication/authen_service.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key, required this.title});
@@ -18,6 +19,13 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int myIndex = 0;
   List<Widget> widgetList = const [];
+
+  final user = AuthenService().currentUser;
+
+  Future<void> signOut() async {
+    await AuthenService().signOut();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

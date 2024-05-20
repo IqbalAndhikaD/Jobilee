@@ -5,14 +5,17 @@ import '../exception/auth_exception.dart';
 
 
 class AuthenService {
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  User? get currentUser => _firebaseAuth.currentUser;
   late AuthResultStatus status;
+
   Future<AuthResultStatus> loginWithEmailAndPassword ({
     required String email,
     required String password,
   }) async {
     try {
       final UserCredential authResult = 
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
+        await _firebaseAuth.signInWithEmailAndPassword(
           email: email, 
           password: password
         );
@@ -35,7 +38,7 @@ class AuthenService {
   }) async {
     try {
       final UserCredential authResult = 
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, 
           password: password
         );
@@ -62,6 +65,10 @@ class AuthenService {
       'emaail': email,
       "userId": userId,
     }); 
+  }
+
+  Future<void> signOut() async {
+    await _firebaseAuth.signOut();
   }
 
 }

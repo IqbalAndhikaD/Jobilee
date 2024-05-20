@@ -23,32 +23,34 @@ class _LoginState extends State<Register> {
   final TextEditingController _password = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  void handleSignUp(){
+  void handleSignUp() {
     //loadingDialog.showLoadingDiaglog(context, "Loading...");
 
     AuthenService()
-      .signUpWithEmailAndPassword(
-        username: _username.text, 
-        email: _email.text, 
-        password: _password.text
-    )
-      .then((status) {
+        .signUpWithEmailAndPassword(
+            username: _username.text,
+            email: _email.text,
+            password: _password.text)
+        .then(
+      (status) {
         if (status == AuthResultStatus.successful) {
           Fluttertoast.showToast(msg: "Successfull");
           Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => NavBar(index: 0,)),
-      );
+            context,
+            MaterialPageRoute(
+                builder: (context) => NavBar(
+                      index: 0,
+                    )),
+          );
         } else {
-          final errorMsg =
-            AuthException.generateExceptionMessage(status);
+          final errorMsg = AuthException.generateExceptionMessage(status);
           Fluttertoast.showToast(msg: errorMsg);
         }
       },
     );
   }
 
- @override
+  @override
   void initState() {
     super.initState();
     _formKey.currentState?.validate(); // call validate here
@@ -59,7 +61,7 @@ class _LoginState extends State<Register> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Form(
-        key: _formKey ,
+        key: _formKey,
         child: Container(
           margin: const EdgeInsets.all(38),
           child: Column(
@@ -160,7 +162,7 @@ class _LoginState extends State<Register> {
               ),
 
               // Username Field
-             TextFormField(
+              TextFormField(
                 controller: _email,
                 validator: (text) {
                   if (text == null || text.trim().isEmpty) {
@@ -223,12 +225,12 @@ class _LoginState extends State<Register> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    onPressed: (){
+                    onPressed: () {
                       if (_formKey.currentState?.validate() ?? false) {
                         handleSignUp();
                       }
-                    }, 
-                     //=> _registNotifications(context),
+                    },
+                    //=> _registNotifications(context),
                     child: Text(
                       'Sign Up',
                       style: TextStyle(
