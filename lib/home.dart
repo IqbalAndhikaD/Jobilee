@@ -31,10 +31,6 @@ class _HomeState extends State<Home> {
   final user = AuthenService().currentUser;
   dynamic userInfo;
 
-  Future<void> signOut() async {
-    await AuthenService().signOut();
-  }
-
   Future<dynamic> getUserInfo() async {
     var result = await AuthenService().getUserInfo();
     if (result != null) {
