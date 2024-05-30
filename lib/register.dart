@@ -1,10 +1,14 @@
 // ignore_for_file: use_super_parameters, prefer_const_literals_to_create_immutables, prefer_const_constructors, sized_box_for_whitespace
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:tubes/authentication/authen_service.dart';
 import 'package:tubes/home.dart';
 import 'package:tubes/login.dart';
 import 'package:tubes/navbar.dart';
 import 'package:tubes/rsc/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../exception/auth_exception.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
@@ -14,13 +18,48 @@ class Register extends StatefulWidget {
 }
 
 class _LoginState extends State<Register> {
-  bool _isSecurePassword = false;
+  final TextEditingController _username = TextEditingController();
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  void handleSignUp(){
+    //loadingDialog.showLoadingDiaglog(context, "Loading...");
+
+    AuthenService()
+      .signUpWithEmailAndPassword(
+        username: _username.text, 
+        email: _email.text, 
+        password: _password.text
+    )
+      .then((status) {
+        if (status == AuthResultStatus.successful) {
+          Fluttertoast.showToast(msg: "Successfull");
+          Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => NavBar(index: 0,)),
+      );
+        } else {
+          final errorMsg =
+            AuthException.generateExceptionMessage(status);
+          Fluttertoast.showToast(msg: errorMsg);
+        }
+      },
+    );
+  }
+
+ @override
+  void initState() {
+    super.initState();
+    _formKey.currentState?.validate(); // call validate here
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: SafeArea(
+      body: Form(
+        key: _formKey ,
         child: Container(
           margin: const EdgeInsets.all(38),
           child: Column(
@@ -89,24 +128,17 @@ class _LoginState extends State<Register> {
               ),
 
               // Username Field
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Enter your username',
-                          hintStyle: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 12,
-                              fontFamily: 'GreycliffCF')),
-                    ),
-                  ),
+              TextFormField(
+                controller: _username,
+                validator: (text) {
+                  if (text == null || text.trim().isEmpty) {
+                    return 'Username is empty';
+                  }
+                  return null;
+                },
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Username",
                 ),
               ),
               SizedBox(
@@ -128,24 +160,17 @@ class _LoginState extends State<Register> {
               ),
 
               // Username Field
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Enter your email',
-                          hintStyle: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 12,
-                              fontFamily: 'GreycliffCF')),
-                    ),
-                  ),
+             TextFormField(
+                controller: _email,
+                validator: (text) {
+                  if (text == null || text.trim().isEmpty) {
+                    return 'Email is empty';
+                  }
+                  return null;
+                },
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Email",
                 ),
               ),
               SizedBox(
@@ -167,28 +192,18 @@ class _LoginState extends State<Register> {
               ),
 
               // Password Field
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextField(
-                      obscureText: _isSecurePassword,
-                      textAlignVertical: TextAlignVertical.center,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Enter your password',
-                        hintStyle: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12,
-                            fontFamily: 'GreycliffCF'),
-                        suffixIcon: togglePassword(),
-                      ),
-                    ),
-                  ),
+              TextFormField(
+                obscureText: true,
+                controller: _password,
+                validator: (text) {
+                  if (text == null || text.trim().isEmpty) {
+                    return 'Password is empty';
+                  }
+                  return null;
+                },
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "password",
                 ),
               ),
               SizedBox(
@@ -208,7 +223,12 @@ class _LoginState extends State<Register> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    onPressed: () => _registNotifications(context),
+                    onPressed: (){
+                      if (_formKey.currentState?.validate() ?? false) {
+                        handleSignUp();
+                      }
+                    }, 
+                     //=> _registNotifications(context),
                     child: Text(
                       'Sign Up',
                       style: TextStyle(
@@ -273,20 +293,6 @@ class _LoginState extends State<Register> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget togglePassword() {
-    return IconButton(
-      onPressed: () {
-        setState(() {
-          _isSecurePassword = !_isSecurePassword;
-        });
-      },
-      icon: _isSecurePassword
-          ? Icon(Icons.visibility)
-          : Icon(Icons.visibility_off),
-      color: lblue,
     );
   }
 
