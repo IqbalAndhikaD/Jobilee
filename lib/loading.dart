@@ -2,7 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:tubes/login.dart';
+import 'package:tubes/navbar.dart';
 import 'package:tubes/rsc/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tubes/authentication/authen_service.dart';
 
 class Loading extends StatefulWidget {
   const Loading({Key? key}) : super(key: key);
@@ -12,15 +15,41 @@ class Loading extends StatefulWidget {
 }
 
 class _LoadingState extends State<Loading> {
+  var isLogin = false;
+  var userInfo = AuthenService().userInfo;
+
+  checkIfLogin() async {
+    AuthenService().authStateChanges.listen((User? user) async {
+      if (user == null) {
+        setState(() {
+          isLogin = false;
+        });
+      } else {
+        if (userInfo == null) {
+          var result = await AuthenService().getUserInfo();
+          if (result != null) {
+            setState(() {
+              userInfo = result;
+            });
+          }
+        }
+        setState(() {
+          isLogin = true;
+        });
+      }
+    });
+  }
+
   void initState() {
     super.initState();
+    checkIfLogin();
     _navigatetohome();
   }
 
   _navigatetohome() async {
     await Future.delayed(Duration(milliseconds: 4000), () {});
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => Login()));
+        context, MaterialPageRoute(builder: (context) => isLogin ? NavBar(index: 0) : Login()));
   }
 
   @override
