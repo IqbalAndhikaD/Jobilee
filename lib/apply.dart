@@ -222,8 +222,8 @@ class _ApplyState extends State<Apply> {
                                     child: const Image(
                                       image:
                                           AssetImage('assets/images/tesla.png'),
-                                      height: 50,
-                                      width: 50,
+                                      height: 35,
+                                      width: 35,
                                     ),
                                   ),
                                   Flexible(
@@ -231,7 +231,7 @@ class _ApplyState extends State<Apply> {
                                         title: Text(
                                           'Product Manager',
                                           style: TextStyle(
-                                              fontSize: 16,
+                                              fontSize: 14,
                                               color: base,
                                               fontWeight: FontWeight.bold,
                                               fontFamily: 'GreycliffCF'),
@@ -243,7 +243,7 @@ class _ApplyState extends State<Apply> {
                                             Text(
                                               'Tesla',
                                               style: TextStyle(
-                                                  fontSize: 14,
+                                                  fontSize: 12,
                                                   color: base,
                                                   fontWeight: FontWeight.normal,
                                                   fontFamily: 'GreycliffCF'),
@@ -280,7 +280,7 @@ class _ApplyState extends State<Apply> {
                                                   ],
                                                 ),
                                               ],
-                                            )
+                                            ),
                                           ],
                                         ),
                                         trailing: TextButton(
@@ -297,7 +297,7 @@ class _ApplyState extends State<Apply> {
                                               style: TextStyle(
                                                   color: Colors.white,
                                                   fontFamily: 'GreycliffCF',
-                                                  fontSize: 10,
+                                                  fontSize: 8.5,
                                                   fontWeight: FontWeight.w600),
                                             ))),
                                   )

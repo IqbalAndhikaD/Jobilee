@@ -276,6 +276,148 @@ class _ApplyJobState extends State<ApplyJob> {
               ],
             ),
 
+            Positioned(
+                top: 440,
+                left: 45,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Job Description',
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'GreycliffCF'),
+                    ),
+                  ],
+                )),
+
+            Positioned(
+                top: 465,
+                left: 45,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  //mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: 320,
+                      child: Text(
+                        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.',
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: base,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: 'GreycliffCF'),
+                      ),
+                    )
+                  ],
+                )),
+
+            Positioned(
+                top: 530,
+                left: 45,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Job Responsibilities',
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'GreycliffCF'),
+                    ),
+                  ],
+                )),
+
+            Positioned(
+                top: 555,
+                left: 45,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  //mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: 320,
+                      child: Text(
+                        '- Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.',
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: base,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: 'GreycliffCF'),
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    SizedBox(
+                      width: 320,
+                      child: Text(
+                        '- Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.',
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: base,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: 'GreycliffCF'),
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    SizedBox(
+                      width: 320,
+                      child: Text(
+                        '- Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.',
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: base,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: 'GreycliffCF'),
+                      ),
+                    )
+                  ],
+                )),
+
+            Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.bottomLeft,
+              children: [
+                Positioned(
+                  top: 90,
+                  child: Container(
+                    //color: Colors.red.withOpacity(0.2),
+                    margin: const EdgeInsets.only(
+                        right: 0, left: 20, top: 5, bottom: 0),
+                    child: Column(
+                      children: [
+                        Padding(
+                            padding: const EdgeInsets.all(0),
+                            child: SizedBox(
+                                child: TextButton(
+                                    style: TextButton.styleFrom(
+                                      minimumSize: Size.square(13),
+                                      backgroundColor: bblue,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(99),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => NavBar(index: 0,),
+                                          ));
+                                    },
+                                    child: Icon(
+                                      Icons.arrow_back,
+                                      color: lblue,
+                                      size: 24,
+                                    ))))
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+
             // Button Apply Job
             Stack(
               clipBehavior: Clip.none,
@@ -424,7 +566,7 @@ class _ApplyJobState extends State<ApplyJob> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => NavBar(),
+                        builder: (context) => NavBar(index: 1,),
                       ));
                 },
                 child: Text(

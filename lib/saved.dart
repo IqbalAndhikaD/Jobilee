@@ -28,6 +28,7 @@ class _SavedState extends State<Saved> {
                     width: MediaQuery.of(context).size.width,
                     child: Stack(
                       children: [
+                        //profile
                         const Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           textDirection: TextDirection.ltr,
@@ -201,7 +202,7 @@ class _SavedState extends State<Saved> {
                   // list
                   Flexible(
                     child: ListView.builder(
-                      itemCount: 4,
+                      itemCount: 2,
                       itemBuilder: (context, index) {
                         return Card(
                             color: Colors.white,

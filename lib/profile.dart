@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
+import 'package:tubes/editprofile.dart';
 import 'package:tubes/login.dart';
 import 'package:tubes/rsc/colors.dart';
 
@@ -13,12 +13,13 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+    bool _isSecurePassword = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 100),
+          padding: const EdgeInsets.only(top: 40.0, right: 40.9, left: 40.0),
           child: Column(
             children: [
               // Judul = Profile
@@ -40,7 +41,7 @@ class _ProfileState extends State<Profile> {
                           width: 120,
                           height: 120,
                           child: ProfilePicture(
-                            name: 'Ashel',
+                            name: 'Ashel Alifyaa',
                             radius: 55,
                             fontsize: 20,
                             img:
@@ -83,17 +84,93 @@ class _ProfileState extends State<Profile> {
                     fontWeight: FontWeight.bold),
               ),
               Text(
-                'Ashel',
+                'Ashel Alifyaa',
                 style: TextStyle(
                     fontSize: 20,
                     fontFamily: 'GreycliffCF',
                     fontWeight: FontWeight.bold),
               ),
 
+              //Button Upload CV
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 0.0, vertical: 5),
+                child: Container(
+                  width: 200,
+                  child: TextButton(
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.all(9),
+                        backgroundColor: lblue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      onPressed: () {},
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Upload CV',
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'GreycliffCF'),
+                          ),
+                          Icon(
+                            Icons.cloud_upload,
+                            color: Colors.white,
+                          )
+                        ],
+                      )),
+                ),
+              ),
+
+              //Button Edit Profile
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 0.0, vertical: 5),
+                child: Container(
+                  width: 200,
+                  child: TextButton(
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.all(9),
+                        backgroundColor: lblue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => editProfile(),
+                          ));
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Edit Profile',
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'GreycliffCF'),
+                          ),
+                          Icon(
+                            Icons.edit_square,
+                            color: Colors.white,
+                          )
+                        ],
+                      )),
+                ),
+              ),
+
               // Button logout
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 0.0, vertical: 240),
+                    const EdgeInsets.symmetric(horizontal: 0.0, vertical: 14),
                 child: Container(
                   width: 350,
                   child: TextButton(
@@ -126,6 +203,19 @@ class _ProfileState extends State<Profile> {
           ),
         ),
       ),
+    );
+  }
+    Widget togglePassword() {
+    return IconButton(
+      onPressed: () {
+        setState(() {
+          _isSecurePassword = !_isSecurePassword;
+        });
+      },
+      icon: _isSecurePassword
+          ? Icon(Icons.visibility)
+          : Icon(Icons.visibility_off),
+      color: lblue,
     );
   }
 }

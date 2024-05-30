@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "691096045938",
+    "firebase_url": "https://jobilee-9c76b-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "jobilee-9c76b",
+    "storage_bucket": "jobilee-9c76b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:691096045938:android:13dd41c1cb5ee698f1f5eb",
+        "android_client_info": {
+          "package_name": "com.example.tubes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnxAWxCA5gxFI2HV4DWf_Ag7vsaB498z4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

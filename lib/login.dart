@@ -1,9 +1,13 @@
 // ignore_for_file: use_super_parameters, prefer_const_literals_to_create_immutables, prefer_const_constructors, sized_box_for_whitespace
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:tubes/authentication/authen_service.dart';
 import 'package:tubes/navbar.dart';
 import 'package:tubes/register.dart';
 import 'package:tubes/rsc/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../exception/auth_exception.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -13,13 +17,42 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  bool _isSecurePassword = false;
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  void handleLogin() async {
+    try {
+      await AuthenService().loginWithEmailAndPassword(
+        email: _email.text,
+        password: _password.text,
+      );
+      Fluttertoast.showToast(msg: "Successful");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => NavBar(
+                  index: 0,
+                )),
+      );
+    } catch (e) {
+      final errorMsg = AuthException.generateExceptionMessage(e);
+      Fluttertoast.showToast(msg: errorMsg);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _formKey.currentState?.validate(); // call validate here
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: SafeArea(
+      body: Form(
+        key: _formKey,
         child: Container(
           margin: const EdgeInsets.all(38),
           child: Column(
@@ -79,29 +112,22 @@ class _LoginState extends State<Login> {
                 height: 9,
               ),
 
-              // Username Field
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Enter your username',
-                          hintStyle: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 12,
-                              fontFamily: 'GreycliffCF')),
-                    ),
-                  ),
+              TextFormField(
+                controller: _email,
+                validator: (text) {
+                  if (text == null || text.trim().isEmpty) {
+                    return 'Email is empty';
+                  }
+                  return null;
+                },
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Email",
                 ),
               ),
+
               SizedBox(
-                height: 13,
+                height: 10,
               ),
 
               // Password Sub-Title
@@ -118,31 +144,21 @@ class _LoginState extends State<Login> {
                 height: 9,
               ),
 
-              // Password Field
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextField(
-                      obscureText: _isSecurePassword,
-                      textAlignVertical: TextAlignVertical.center,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Enter your password',
-                        hintStyle: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12,
-                            fontFamily: 'GreycliffCF'),
-                        suffixIcon: togglePassword(),
-                      ),
-                    ),
-                  ),
+              TextFormField(
+                obscureText: true,
+                controller: _password,
+                validator: (text) {
+                  if (text == null || text.trim().isEmpty) {
+                    return 'Password is empty';
+                  }
+                  return null;
+                },
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Password",
                 ),
               ),
+
               SizedBox(
                 height: 33,
               ),
@@ -152,7 +168,7 @@ class _LoginState extends State<Login> {
                 padding: const EdgeInsets.symmetric(horizontal: 0.0),
                 child: Container(
                   width: 350,
-                  child: TextButton(
+                  child: ElevatedButton(
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.all(9),
                       backgroundColor: lblue,
@@ -161,11 +177,9 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                     onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => NavBar(),
-                          ));
+                      if (_formKey.currentState?.validate() ?? false) {
+                        handleLogin();
+                      }
                     },
                     child: Text(
                       'Login',
@@ -231,20 +245,6 @@ class _LoginState extends State<Login> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget togglePassword() {
-    return IconButton(
-      onPressed: () {
-        setState(() {
-          _isSecurePassword = !_isSecurePassword;
-        });
-      },
-      icon: _isSecurePassword
-          ? Icon(Icons.visibility)
-          : Icon(Icons.visibility_off),
-      color: lblue,
     );
   }
 }
