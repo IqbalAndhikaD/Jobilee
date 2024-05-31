@@ -153,33 +153,6 @@ class _SavedState extends State<Saved> {
                                                   fontWeight: FontWeight.normal,
                                                   fontFamily: 'GreycliffCF'),
                                             ),
-                                            FutureBuilder(
-                                              future: _getJobTotalApplicant(
-                                                  doc.id),
-                                              builder: (context,
-                                                  AsyncSnapshot<QuerySnapshot>
-                                                      res) {
-                                                if (res.connectionState ==
-                                                    ConnectionState.done) {
-                                                  return Text(
-                                                    res.data!.docs.length
-                                                            .toString() +
-                                                        ' Applicants',
-                                                    style: TextStyle(
-                                                        fontSize: 10,
-                                                        color: Colors.grey,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                        fontFamily:
-                                                            'GreycliffCF'),
-                                                  );
-                                                } else if (snapshot
-                                                        .connectionState ==
-                                                    ConnectionState.none) {
-                                                  return Text("No data");
-                                                }
-                                                return CircularProgressIndicator();
-                                              }),
                                             const SizedBox(height: 6),
                                             Row(
                                               crossAxisAlignment:
