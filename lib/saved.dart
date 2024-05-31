@@ -6,6 +6,7 @@ import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:tubes/authentication/authen_service.dart';
 import 'package:tubes/rsc/colors.dart';
 
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -42,6 +43,16 @@ class _SavedState extends State<Saved> {
     return jobSaved.get();
   }
 
+  Future<QuerySnapshot> _getJobTotalApplicant(
+    String job_id,
+  ) async {
+    Query<Map<String, dynamic>> appliedJobs = FirebaseFirestore.instance
+        .collection("job_applications")
+        .where('job_vacation_id', isEqualTo: job_id);
+
+    return await appliedJobs.get();
+  }
+
   Future<DocumentSnapshot<Map<String, dynamic>>> getJobVacationData(
       String jobVacationId) async {
     DocumentReference<Map<String, dynamic>> jobVacations = FirebaseFirestore
@@ -61,6 +72,30 @@ class _SavedState extends State<Saved> {
         .where('job_vacation_id', isEqualTo: job_id);
 
     return await savedJobs.get();
+  }
+
+  Future<void> _saveJob(
+    String job_id,
+  ) async {
+    CollectionReference savedJobs =
+        FirebaseFirestore.instance.collection("job_saved");
+    QuerySnapshot res = await _isJobSaved(job_id);
+
+    try {
+      if (res.docs.isNotEmpty) {
+        await savedJobs.doc(res.docs[0].id).delete();
+        Fluttertoast.showToast(msg: "Job Unsaved");
+      } else {
+        await savedJobs.add({
+          'user_id': user!.uid,
+          'job_vacation_id': job_id,
+        });
+        Fluttertoast.showToast(msg: "Job Saved");
+      }
+    } catch (e) {
+      final errorMsg = e.toString();
+      Fluttertoast.showToast(msg: errorMsg);
+    }
   }
 
   Widget _savedJobsList() {
@@ -115,14 +150,6 @@ class _SavedState extends State<Saved> {
                                               style: TextStyle(
                                                   fontSize: 12,
                                                   color: base,
-                                                  fontWeight: FontWeight.normal,
-                                                  fontFamily: 'GreycliffCF'),
-                                            ),
-                                            const Text(
-                                              '+300 Applicants',
-                                              style: TextStyle(
-                                                  fontSize: 10,
-                                                  color: Colors.grey,
                                                   fontWeight: FontWeight.normal,
                                                   fontFamily: 'GreycliffCF'),
                                             ),
@@ -233,7 +260,10 @@ class _SavedState extends State<Saved> {
                                                         }),
                                                     color: lblue,
                                                     iconSize: 20,
-                                                    onPressed: () {},
+                                                    onPressed: () async {
+                                                        await _saveJob(doc.get('job_vacation_id'));
+                                                        setState(() {});
+                                                      }
                                                   ),
                                                 ),
                                               ],

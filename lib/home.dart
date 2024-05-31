@@ -10,6 +10,7 @@ import 'package:tubes/rsc/colors.dart';
 import 'package:tubes/authentication/authen_service.dart';
 import 'package:tubes/rsc/colors.dart';
 
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -48,6 +49,16 @@ class _HomeState extends State<Home> {
     return await jobVacancies.get();
   }
 
+  Future<QuerySnapshot> _getJobTotalApplicant(
+    String job_id,
+  ) async {
+    Query<Map<String, dynamic>> appliedJobs = FirebaseFirestore.instance
+        .collection("job_applications")
+        .where('job_vacation_id', isEqualTo: job_id);
+
+    return await appliedJobs.get();
+  }
+
   Future<QuerySnapshot> _isJobApplied(
     String job_id,
   ) async {
@@ -68,6 +79,29 @@ class _HomeState extends State<Home> {
         .where('job_vacation_id', isEqualTo: job_id);
 
     return await savedJobs.get();
+  }
+
+  Future<void> _saveJob(
+    String job_id,
+  ) async {
+    CollectionReference savedJobs = FirebaseFirestore.instance.collection("job_saved");
+    QuerySnapshot res = await _isJobSaved(job_id);
+
+    try {
+      if (res.docs.isNotEmpty) {
+        await savedJobs.doc(res.docs[0].id).delete();
+        Fluttertoast.showToast(msg: "Job Unsaved");
+      } else {
+        await savedJobs.add({
+          'user_id': user!.uid,
+          'job_vacation_id': job_id,
+        });
+        Fluttertoast.showToast(msg: "Job Saved");
+      }
+    } catch (e) {
+      final errorMsg = e.toString();
+      Fluttertoast.showToast(msg: errorMsg);
+    }
   }
 
   Widget _jobVacanciesList() {
@@ -118,14 +152,24 @@ class _HomeState extends State<Home> {
                                           fontWeight: FontWeight.normal,
                                           fontFamily: 'GreycliffCF'),
                                     ),
-                                    const Text(
-                                      '+300 Applicants',
-                                      style: TextStyle(
-                                          fontSize: 10,
-                                          color: Colors.grey,
-                                          fontWeight: FontWeight.normal,
-                                          fontFamily: 'GreycliffCF'),
-                                    ),
+                                    FutureBuilder(
+                                      future: _getJobTotalApplicant(doc.id),
+                                      builder: (context, AsyncSnapshot<QuerySnapshot> res) {
+                                        if (res.connectionState == ConnectionState.done) {
+                                          return Text(
+                                            res.data!.docs.length.toString() + ' Applicants',
+                                            style: TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.grey,
+                                                fontWeight: FontWeight.normal,
+                                                fontFamily: 'GreycliffCF'),
+                                          );
+                                        } else if (res.connectionState ==
+                                            ConnectionState.none) {
+                                          return Text("No data");
+                                        }
+                                        return CircularProgressIndicator();
+                                    }),
                                     const SizedBox(height: 6),
                                     Row(
                                       crossAxisAlignment:
@@ -218,7 +262,9 @@ class _HomeState extends State<Home> {
                                                             MaterialPageRoute(
                                                               builder:
                                                                   (context) =>
-                                                                      ApplyJob(),
+                                                                      ApplyJob(
+                                                                        job_id: doc.id,
+                                                                      ),
                                                             ));
                                                       }
                                                       ;
@@ -255,30 +301,26 @@ class _HomeState extends State<Home> {
                                             shape: BoxShape.circle,
                                             color: bblue,
                                           ),
-                                          child: IconButton(
-                                            icon: FutureBuilder(
-                                                future: _isJobSaved(doc.id),
-                                                builder: (context,
-                                                    AsyncSnapshot<QuerySnapshot>
-                                                        res) {
-                                                  if (res.connectionState ==
-                                                      ConnectionState.done) {
-                                                    return Icon(res.data!.docs
-                                                            .isNotEmpty
-                                                        ? Icons.bookmark
-                                                        : Icons
-                                                            .bookmark_border_outlined);
-                                                  } else if (snapshot
-                                                          .connectionState ==
-                                                      ConnectionState.none) {
-                                                    return Text("No data");
-                                                  }
-                                                  return CircularProgressIndicator();
-                                                }),
-                                            color: lblue,
-                                            iconSize: 20,
-                                            onPressed: () {},
-                                          ),
+                                          child: FutureBuilder(
+                                            future: _isJobSaved(doc.id),
+                                            builder: (context, AsyncSnapshot<QuerySnapshot> res) {
+                                              if (res.connectionState == ConnectionState.done) {
+                                                return IconButton(
+                                                    icon: Icon(res.data!.docs.isNotEmpty
+                                                                ? Icons.bookmark
+                                                                : Icons.bookmark_border_outlined),
+                                                    color: lblue,
+                                                    iconSize: 20,
+                                                    onPressed: () async {
+                                                      await _saveJob(doc.id);
+                                                      setState(() {});
+                                                    }
+                                                );
+                                              } else if (snapshot.connectionState == ConnectionState.none) {
+                                                return Text("No data");
+                                              }
+                                              return CircularProgressIndicator();
+                                            })
                                         ),
                                       ],
                                     ),

@@ -114,41 +114,6 @@ class _ProfileState extends State<Profile> {
                     fontWeight: FontWeight.bold),
               ),
 
-              //Button Upload CV
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 0.0, vertical: 5),
-                child: Container(
-                  width: 200,
-                  child: TextButton(
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.all(9),
-                        backgroundColor: lblue,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ),
-                      onPressed: () {},
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Upload CV',
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'GreycliffCF'),
-                          ),
-                          Icon(
-                            Icons.cloud_upload,
-                            color: Colors.white,
-                          )
-                        ],
-                      )),
-                ),
-              ),
-
               //Button Edit Profile
               Padding(
                 padding:

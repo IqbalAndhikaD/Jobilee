@@ -5,9 +5,16 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:tubes/login.dart';
 import 'package:tubes/profile.dart';
+import 'package:tubes/rsc/log.dart';
+import 'navbar.dart';
+
+import 'package:tubes/authentication/authen_service.dart';
 import 'package:tubes/rsc/colors.dart';
 
-import 'navbar.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class editProfile extends StatefulWidget {
   const editProfile({super.key});
@@ -18,13 +25,60 @@ class editProfile extends StatefulWidget {
 
 class _editProfileState extends State<editProfile> {
   bool _isSecurePassword = false;
+
+  final TextEditingController _username = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  final user = AuthenService().currentUser;
+  dynamic userInfo;
+
+  Future<dynamic> getUserInfo() async {
+    var result = await AuthenService().getUserInfo();
+    if (result != null) {
+      setState(() {
+        userInfo = result;
+      });
+    }
+  }
+
+  Future<void> handleUpdate(
+    BuildContext context
+  ) async {
+    AppLog.info(_username.text + ' ' + _password.text);
+    try {
+      if (_username.text != '') {
+        await user!.updateDisplayName(_username.text);
+        await FirebaseFirestore.instance.collection('users').doc(user!.uid).update({
+          'username': _username.text,
+        });
+      }
+      if (_password.text != '') {
+        await user!.updatePassword(_password.text);
+      }
+      Fluttertoast.showToast(msg: "Profile Updated");
+      _applyNotifications(context);
+    } catch (e) {
+      final errorMsg = e.toString();
+      Fluttertoast.showToast(msg: errorMsg);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUserInfo();
+    _formKey.currentState?.validate(); // call validate here
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData.fallback(),
       ),
-      body: SafeArea(
+      body: Form(
+        key: _formKey,
         child: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.only(top: 0.0, right: 60.9, left: 60.0),
@@ -49,11 +103,10 @@ class _editProfileState extends State<editProfile> {
                             width: 120,
                             height: 120,
                             child: ProfilePicture(
-                              name: 'Ashel Alifyaa',
+                              name: userInfo?['username'] ?? '',
                               radius: 55,
                               fontsize: 20,
-                              img:
-                                  'https://i.pinimg.com/736x/d8/ef/ce/d8efce4fface78988c6cba03bca0fb6a.jpg',
+                              img: userInfo?['profile_pic'] ?? '',
                             ),
                           ),
                           // Icon change ava/pp
@@ -91,171 +144,50 @@ class _editProfileState extends State<editProfile> {
                       fontFamily: 'GreycliffCF',
                       fontWeight: FontWeight.bold),
                 ),
+
                 Text(
-                  'Ashel Alifyaa',
+                  userInfo?['username'] ?? '',
                   style: TextStyle(
                       fontSize: 20,
                       fontFamily: 'GreycliffCF',
                       fontWeight: FontWeight.bold),
                 ),
 
-                //Button Upload CV
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 0.0, vertical: 5),
-                  child: Container(
-                    width: 300,
-                    child: TextButton(
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.all(9),
-                          backgroundColor: lblue,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        onPressed: () {},
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Upload CV',
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'GreycliffCF'),
-                            ),
-                            Icon(
-                              Icons.cloud_upload,
-                              color: Colors.white,
-                            )
-                          ],
-                        )),
-                  ),
-                ),
-
                 SizedBox(height: 9),
-                // First Name Title
+
+                // Username Title
                 Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                   Text(
-                    'First Name',
+                    'Username',
                     style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'GreycliffCF'),
                   ),
                 ]),
-                SizedBox(
-                  height: 9,
-                ),
-
                 // First-Name Field
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                  child: Container(
-                    height: 40,
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(12)),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20.0, bottom: 5.0),
-                      child: TextField(
-                        decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Enter your first name',
+                TextFormField(
+                  controller: _username,
+                  validator: (text) {
+                    if (text == null || text.trim().isEmpty) {
+                      return 'Username is empty';
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                            hintText: 'Enter your username',
                             hintStyle: TextStyle(
                                 color: Colors.grey,
                                 fontSize: 12,
-                                fontFamily: 'GreycliffCF')),
-                      ),
-                    ),
+                                fontFamily: 'GreycliffCF'
+                            )
                   ),
                 ),
                 SizedBox(
-                  height: 13,
+                  height: 20,
                 ),
 
-                // Last-Name
-                Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                  Text(
-                    'Last Name',
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'GreycliffCF'),
-                  ),
-                ]),
-                SizedBox(
-                  height: 9,
-                ),
-
-                // Last-Name Field
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                  child: Container(
-                    height: 40,
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(12)),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20.0, bottom: 5.0),
-                      child: TextField(
-                        decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Enter your last name',
-                            hintStyle: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 12,
-                                fontFamily: 'GreycliffCF')),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 13,
-                ),
-
-                // Email sub
-                Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                  Text(
-                    'Email',
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'GreycliffCF'),
-                  ),
-                ]),
-                SizedBox(
-                  height: 9,
-                ),
-
-                // Email Field
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                  child: Container(
-                    height: 40,
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(12)),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20.0, bottom: 5.0),
-                      child: TextField(
-                        decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Enter your email',
-                            hintStyle: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 12,
-                                fontFamily: 'GreycliffCF')),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 13,
-                ),
-
-                // Password Sub-Title
+                // Password Title
                 Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                   Text(
                     'Password',
@@ -265,39 +197,19 @@ class _editProfileState extends State<editProfile> {
                         fontFamily: 'GreycliffCF'),
                   ),
                 ]),
-                SizedBox(
-                  height: 9,
+                // First-Name Field
+                TextFormField(
+                  controller: _password,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                      hintText: 'Enter your password',
+                      hintStyle: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                          fontFamily: 'GreycliffCF')),
                 ),
-
-                // Password Field
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                  child: Container(
-                    height: 40,
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(12)),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20.0, bottom: 5.0),
-                      child: TextField(
-                        obscureText: _isSecurePassword,
-                        textAlignVertical: TextAlignVertical.center,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Enter your password',
-                          hintStyle: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 12,
-                              fontFamily: 'GreycliffCF'),
-                          suffixIcon: togglePassword(),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-
                 SizedBox(
-                  height: 14,
+                  height: 16,
                 ),
 
                 //Button Edit Profile
@@ -314,12 +226,17 @@ class _editProfileState extends State<editProfile> {
                             borderRadius: BorderRadius.circular(14),
                           ),
                         ),
-                        onPressed: () => _applyNotifications(context),
+                        onPressed: () => {
+                          AppLog.info(_formKey.currentState?.validate()),
+                          if (_formKey.currentState?.validate() ?? false) {
+                            handleUpdate(context)
+                          }
+                        },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Saved',
+                              'Save',
                               style: TextStyle(
                                   fontSize: 16,
                                   color: Colors.white,

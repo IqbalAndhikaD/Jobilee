@@ -189,7 +189,8 @@ class _ApplyState extends State<Apply> {
                                                           MaterialPageRoute(
                                                             builder:
                                                                 (context) =>
-                                                                    ApplyJob(),
+                                                                    ApplyJob(job_id: doc.get(
+                                                                        'job_vacation_id')),
                                                           ));
                                                     },
                                                     child: const Text(
