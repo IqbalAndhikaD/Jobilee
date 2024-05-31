@@ -1,8 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:tubes/applyjob.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
+
+import 'package:tubes/authentication/authen_service.dart';
 import 'package:tubes/rsc/colors.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tubes/rsc/log.dart';
 
 class Apply extends StatefulWidget {
   const Apply({super.key});
@@ -14,6 +22,218 @@ class Apply extends StatefulWidget {
 class _ApplyState extends State<Apply> {
   int myIndex = 0;
   List<Widget> widgetList = const [];
+
+  final user = AuthenService().currentUser;
+  dynamic userInfo;
+
+  Future<dynamic> getUserInfo() async {
+    var result = await AuthenService().getUserInfo();
+    if (result != null) {
+      setState(() {
+        userInfo = result;
+      });
+    }
+  }
+
+  Future<QuerySnapshot> getData() async {
+    // where user_id == user.uid
+    Query<Map<String, dynamic>> jobApplications = FirebaseFirestore.instance
+        .collection("job_applications")
+        .where('user_id', isEqualTo: user!.uid);
+
+    return jobApplications.get();
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> getJobVacationData(
+      String jobVacationId) async {
+    DocumentReference<Map<String, dynamic>> jobVacations = FirebaseFirestore
+        .instance
+        .collection("job_vacations")
+        .doc(jobVacationId);
+
+    return jobVacations.get();
+  }
+
+  Color _getStatusTextColor(String status) {
+    switch (status) {
+      case 'pending':
+        return Colors.blueAccent;
+      case 'accepted':
+        return Colors.green;
+      case 'rejected':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  Color _getStatusBGColor(String status) {
+    switch (status) {
+      case 'pending':
+        return Color(0xFFC0D5FF);
+      case 'accepted':
+        return Color(0xFFC0FFD5);
+      case 'rejected':
+        return Color(0xFFFFC0C0);
+      default:
+        return const Color(0xFFC3C3C3);
+    }
+  }
+
+  Widget _jobApplicationsList() {
+    return FutureBuilder(
+      future: getData(),
+      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return ListView(
+            children: snapshot.data!.docs
+                .map((doc) => FutureBuilder(
+                    future: getJobVacationData(doc.get('job_vacation_id')),
+                    builder: (context, AsyncSnapshot<DocumentSnapshot> res) {
+                      if (res.connectionState == ConnectionState.done) {
+                        return Card(
+                            color: Colors.white,
+                            elevation: 0,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: Colors.grey[200],
+                                    ),
+                                    padding: const EdgeInsets.all(8),
+                                    child: Image(
+                                      image: NetworkImage(
+                                        res.data!.get('company_img'),
+                                      ),
+                                      height: 35,
+                                      width: 35,
+                                    ),
+                                  ),
+                                  Flexible(
+                                    child: ListTile(
+                                        title: Text(
+                                          res.data!.get('position'),
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: base,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'GreycliffCF'),
+                                        ),
+                                        subtitle: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              res.data!.get('company_name'),
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: base,
+                                                  fontWeight: FontWeight.normal,
+                                                  fontFamily: 'GreycliffCF'),
+                                            ),
+                                            const SizedBox(height: 6),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 4),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                                color: _getStatusBGColor(
+                                                    doc.get('status')),
+                                              ),
+                                              child: Text(
+                                                doc.get('status'),
+                                                style: TextStyle(
+                                                    color: _getStatusTextColor(
+                                                        doc.get('status')),
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontFamily: 'GreycliffCF'),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        trailing: Wrap(
+                                          crossAxisAlignment:
+                                              WrapCrossAlignment.center,
+                                          alignment: WrapAlignment.spaceBetween,
+                                          direction: Axis.horizontal,
+                                          children: [
+                                            Column(
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          right: 8),
+                                                  child: TextButton(
+                                                    style: TextButton.styleFrom(
+                                                      backgroundColor: lblue,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(20),
+                                                      ),
+                                                      minimumSize: Size(60, 0),
+                                                    ),
+                                                    onPressed: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder:
+                                                                (context) =>
+                                                                    ApplyJob(),
+                                                          ));
+                                                    },
+                                                    child: const Text(
+                                                      'See Details',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontFamily:
+                                                              'GreycliffCF',
+                                                          fontSize: 10,
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                    ),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ],
+                                        )),
+                                  )
+                                ],
+                              ),
+                            ));
+                      } else if (snapshot.connectionState ==
+                          ConnectionState.none) {
+                        return Text("No data");
+                      }
+                      return CircularProgressIndicator();
+                    }))
+                .toList(),
+          );
+        } else if (snapshot.connectionState == ConnectionState.none) {
+          return Text("No data");
+        }
+        return CircularProgressIndicator();
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUserInfo();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,17 +249,16 @@ class _ApplyState extends State<Apply> {
                     child: Stack(
                       children: [
                         //PP/ava
-                        const Row(
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           textDirection: TextDirection.ltr,
                           children: [
                             SizedBox(height: 90),
                             ProfilePicture(
-                              name: 'Ashel',
+                              name: userInfo?['username'] ?? '',
                               radius: 36,
                               fontsize: 20,
-                              img:
-                                  'https://i.pinimg.com/736x/d8/ef/ce/d8efce4fface78988c6cba03bca0fb6a.jpg',
+                              img: userInfo?['profile_pic'] ?? '',
                             ),
                           ],
                         ),
@@ -51,6 +270,7 @@ class _ApplyState extends State<Apply> {
                               right: 65, left: 85, top: 3, bottom: 0),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               RichText(
                                 text: TextSpan(
@@ -61,7 +281,9 @@ class _ApplyState extends State<Apply> {
                                       fontFamily: 'GreycliffCF',
                                     ),
                                     children: [
-                                      const TextSpan(text: "Hello, Ashel"),
+                                      TextSpan(
+                                          text:
+                                              'Hello, ${userInfo?['username'] ?? ''}')
                                     ]),
                               ),
 
@@ -200,113 +422,7 @@ class _ApplyState extends State<Apply> {
                   const SizedBox(height: 12),
 
                   // list
-                  Flexible(
-                    child: ListView.builder(
-                      itemCount: 4,
-                      itemBuilder: (context, index) {
-                        return Card(
-                            color: Colors.white,
-                            elevation: 0,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 12),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      color: Colors.grey[200],
-                                    ),
-                                    padding: const EdgeInsets.all(8),
-                                    child: const Image(
-                                      image:
-                                          AssetImage('assets/images/tesla.png'),
-                                      height: 35,
-                                      width: 35,
-                                    ),
-                                  ),
-                                  Flexible(
-                                    child: ListTile(
-                                        title: Text(
-                                          'Product Manager',
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: base,
-                                              fontWeight: FontWeight.bold,
-                                              fontFamily: 'GreycliffCF'),
-                                        ),
-                                        subtitle: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Tesla',
-                                              style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: base,
-                                                  fontWeight: FontWeight.normal,
-                                                  fontFamily: 'GreycliffCF'),
-                                            ),
-                                            const SizedBox(height: 6),
-                                            Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Column(
-                                                  children: [
-                                                    Container(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 8,
-                                                          vertical: 4),
-                                                      decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(4),
-                                                        color: pblue,
-                                                      ),
-                                                      child: const Text(
-                                                        'Pending',
-                                                        style: TextStyle(
-                                                            color: Colors.blue,
-                                                            fontSize: 9,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontFamily:
-                                                                'GreycliffCF'),
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        trailing: TextButton(
-                                            style: TextButton.styleFrom(
-                                              backgroundColor: lblue,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                              ),
-                                            ),
-                                            onPressed: () {},
-                                            child: Text(
-                                              'See Details',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontFamily: 'GreycliffCF',
-                                                  fontSize: 8.5,
-                                                  fontWeight: FontWeight.w600),
-                                            ))),
-                                  )
-                                ],
-                              ),
-                            ));
-                      },
-                    ),
-                  )
+                  Flexible(child: _jobApplicationsList())
                 ],
               ))),
     );
