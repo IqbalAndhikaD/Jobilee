@@ -269,6 +269,7 @@ class _FindState extends State<Find> {
                               right: 65, left: 85, top: 3, bottom: 0),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               RichText(
                                 text: TextSpan(
