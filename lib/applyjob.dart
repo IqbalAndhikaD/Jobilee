@@ -3,16 +3,105 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:tubes/navbar.dart';
+
+import 'package:tubes/authentication/authen_service.dart';
 import 'package:tubes/rsc/colors.dart';
 
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tubes/rsc/log.dart';
+
 class ApplyJob extends StatefulWidget {
-  const ApplyJob({super.key});
+  final String job_id;
+  const ApplyJob({super.key, required this.job_id});
 
   @override
   State<ApplyJob> createState() => _ApplyJobState();
 }
 
 class _ApplyJobState extends State<ApplyJob> {
+  final user = AuthenService().currentUser;
+  dynamic userInfo;
+  dynamic job;
+
+  Future<dynamic> getUserInfo() async {
+    var result = await AuthenService().getUserInfo();
+    if (result != null) {
+      setState(() {
+        userInfo = result;
+      });
+    }
+  }
+
+  Future<QuerySnapshot> _getJobTotalApplicant(
+    String job_id,
+  ) async {
+    Query<Map<String, dynamic>> appliedJobs = FirebaseFirestore.instance
+        .collection("job_applications")
+        .where('job_vacation_id', isEqualTo: job_id);
+
+    return await appliedJobs.get();
+  }
+
+  Future<void> getData() async {
+    DocumentReference<Map<String, dynamic>> jobVacation = FirebaseFirestore.instance
+        .collection("job_vacations")
+        .doc(widget.job_id);
+
+    var result = await jobVacation.get();
+    AppLog.info(result);
+
+    if (result != null) {
+      setState(() {
+        job = result;
+      });
+    } else {
+      Navigator.pop(context);
+    }
+  }
+
+  Future<QuerySnapshot> _isJobApplied(
+    String job_id,
+  ) async {
+    Query<Map<String, dynamic>> appliedJobs = FirebaseFirestore.instance
+        .collection("job_applications")
+        .where('user_id', isEqualTo: user!.uid)
+        .where('job_vacation_id', isEqualTo: job_id);
+
+    return await appliedJobs.get();
+  }
+
+  Future<void> _applyJob(
+    String job_id,
+    BuildContext context,
+  ) async {
+    CollectionReference<Map<String, dynamic>> jobApplications =
+        FirebaseFirestore.instance.collection("job_applications");
+    
+    try {
+      await jobApplications.add({
+        'user_id': user!.uid,
+        'job_vacation_id': job_id,
+        'status': 'pending',
+        'applied_at': FieldValue.serverTimestamp(),
+      });
+      Fluttertoast.showToast(msg: "Job Applied");
+      _applyNotifications(context);
+    } catch (e) {
+      final errorMsg = e.toString();
+      Fluttertoast.showToast(msg: errorMsg);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUserInfo();
+    getData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +109,7 @@ class _ApplyJobState extends State<ApplyJob> {
         child: Stack(
           children: [
             // Cover Gambar Perusahaan
-            buildCoverImage(),
+            buildCoverImage(job != null ? job.data()['cover_img'] : ''),
 
             Padding(
               padding: const EdgeInsets.only(top: 200.0),
@@ -39,7 +128,9 @@ class _ApplyJobState extends State<ApplyJob> {
                 clipBehavior: Clip.none,
                 alignment: Alignment.center,
                 children: [
-                  Positioned(top: 140, child: buildProfileImage()),
+                  Positioned(top: 140, child: buildProfileImage(
+                    job != null ? job.data()['company_img'] : '',
+                  )),
                 ]),
 
             // Info Perusahaan
@@ -50,7 +141,7 @@ class _ApplyJobState extends State<ApplyJob> {
                 Positioned(
                   top: 260,
                   child: Text(
-                    'Tesla',
+                    job != null ? job.data()['company_name'] : '',
                     style: TextStyle(
                         fontSize: 19,
                         color: Colors.black,
@@ -62,7 +153,7 @@ class _ApplyJobState extends State<ApplyJob> {
                 Positioned(
                   top: 290,
                   child: Text(
-                    'Product Manager',
+                    job != null ? job.data()['position'] : '',
                     style: TextStyle(
                         fontSize: 19,
                         color: Colors.black,
@@ -85,8 +176,8 @@ class _ApplyJobState extends State<ApplyJob> {
                               borderRadius: BorderRadius.circular(4),
                               color: dpurple,
                             ),
-                            child: const Text(
-                              'Contract',
+                            child: Text(
+                              job != null ? job.data()['contract'] : '',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,
@@ -106,7 +197,7 @@ class _ApplyJobState extends State<ApplyJob> {
                             color: yellow,
                           ),
                           child: Text(
-                            'Full-time',
+                            job != null ? job.data()['work_type'] : '',
                             style: TextStyle(
                                 color: base,
                                 fontSize: 12,
@@ -150,14 +241,26 @@ class _ApplyJobState extends State<ApplyJob> {
                               ),
                               Column(
                                 children: [
-                                  Text(
-                                    '+300',
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontFamily: 'GreycliffCF',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600),
-                                  ),
+                                  FutureBuilder(
+                                    future: _getJobTotalApplicant(widget.job_id),
+                                    builder: (context,
+                                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.done) {
+                                        return Text(
+                                          snapshot.data!.docs.length.toString(),
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontFamily: 'GreycliffCF',
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600),
+                                        );
+                                      } else if (snapshot.connectionState ==
+                                          ConnectionState.none) {
+                                        return Text("No data");
+                                      }
+                                      return CircularProgressIndicator();
+                                    }),
                                   Text(
                                     '  Applicants  ',
                                     style: TextStyle(
@@ -200,7 +303,7 @@ class _ApplyJobState extends State<ApplyJob> {
                               Column(
                                 children: [
                                   Text(
-                                    '\$15K',
+                                    '\$${job != null ? job.data()['salary'] : ''}',
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontFamily: 'GreycliffCF',
@@ -249,7 +352,7 @@ class _ApplyJobState extends State<ApplyJob> {
                               Column(
                                 children: [
                                   Text(
-                                    ' Senior ',
+                                    ' ${job != null ? job.data()['level'] : ''} ',
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontFamily: 'GreycliffCF',
@@ -303,19 +406,20 @@ class _ApplyJobState extends State<ApplyJob> {
                     SizedBox(
                       width: 320,
                       child: Text(
-                        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.',
+                        job != null ? job.data()['description'] : '',
                         style: TextStyle(
                             fontSize: 12,
                             color: base,
                             fontWeight: FontWeight.w400,
                             fontFamily: 'GreycliffCF'),
+                            textAlign: TextAlign.justify,
                       ),
                     )
                   ],
                 )),
 
             Positioned(
-                top: 530,
+                top: 590,
                 left: 45,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -332,7 +436,7 @@ class _ApplyJobState extends State<ApplyJob> {
                 )),
 
             Positioned(
-                top: 555,
+                top: 620,
                 left: 45,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -341,38 +445,16 @@ class _ApplyJobState extends State<ApplyJob> {
                     SizedBox(
                       width: 320,
                       child: Text(
-                        '- Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.',
+                        job != null ? job.data()['responsibilities'] : '',
                         style: TextStyle(
                             fontSize: 12,
                             color: base,
                             fontWeight: FontWeight.w400,
                             fontFamily: 'GreycliffCF'),
+                            textAlign: TextAlign.justify,
                       ),
                     ),
                     SizedBox(height: 5),
-                    SizedBox(
-                      width: 320,
-                      child: Text(
-                        '- Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.',
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: base,
-                            fontWeight: FontWeight.w400,
-                            fontFamily: 'GreycliffCF'),
-                      ),
-                    ),
-                    SizedBox(height: 5),
-                    SizedBox(
-                      width: 320,
-                      child: Text(
-                        '- Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.',
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: base,
-                            fontWeight: FontWeight.w400,
-                            fontFamily: 'GreycliffCF'),
-                      ),
-                    )
                   ],
                 )),
 
@@ -425,87 +507,38 @@ class _ApplyJobState extends State<ApplyJob> {
               children: [
                 Positioned(
                     top: 750,
-                    child: TextButton(
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.all(10),
-                          fixedSize: Size(340, 0),
-                          backgroundColor: lblue,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        onPressed: () => _applyNotifications(context),
-                        child: Text(
-                          'Apply Job',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontFamily: 'GreycliffCF',
-                              fontWeight: FontWeight.w600),
-                        )))
+                    child: FutureBuilder(
+                        future: _isJobApplied(widget.job_id),
+                        builder: (context, AsyncSnapshot<QuerySnapshot> res) {
+                          if (res.connectionState == ConnectionState.done) {
+                            return res.data!.docs.isEmpty ? TextButton(
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.all(10),
+                                fixedSize: Size(340, 0),
+                                backgroundColor: res.data!.docs.isEmpty ? lblue : Colors.grey,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              onPressed: () => {
+                                if (res.data!.docs.isEmpty) {
+                                  _applyJob(widget.job_id, context),
+                                }
+                              },
+                              child: Text(
+                                'Apply Job',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'GreycliffCF',
+                                    fontWeight: FontWeight.w600),
+                              )) : Text('');
+                          } else if (res.connectionState ==
+                              ConnectionState.none) {
+                            return Text("No data");
+                          }
+                          return CircularProgressIndicator();
+                        })),
               ],
-            ),
-
-            //pp User & Notif
-            Container(
-              padding: const EdgeInsets.all(12),
-              child: Stack(
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(
-                        right: 0, top: 0, left: 0, bottom: 450),
-                    height: 60,
-                    width: MediaQuery.of(context).size.width,
-                    child: Stack(
-                      children: [
-                        //pp
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          textDirection: TextDirection.ltr,
-                          children: [
-                            SizedBox(height: 90),
-                            ProfilePicture(
-                              name: 'Ashel',
-                              radius: 36,
-                              fontsize: 20,
-                              img:
-                                  'https://i.pinimg.com/736x/d8/ef/ce/d8efce4fface78988c6cba03bca0fb6a.jpg',
-                            ),
-                          ],
-                        ),
-
-                        //Notif
-                        Container(
-                          //color: Colors.red.withOpacity(0.2),
-                          margin: const EdgeInsets.only(
-                              right: 0, left: 323, top: 5, bottom: 0),
-                          child: Column(
-                            children: [
-                              Padding(
-                                  padding: const EdgeInsets.all(0),
-                                  child: SizedBox(
-                                      child: TextButton(
-                                          style: TextButton.styleFrom(
-                                            backgroundColor: bblue,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(99),
-                                            ),
-                                          ),
-                                          onPressed: () =>
-                                              _showNotifications(context),
-                                          child: Icon(
-                                            Icons.notifications_none_outlined,
-                                            color: lblue,
-                                            size: 24,
-                                          ))))
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
             ),
           ],
         ),
@@ -513,21 +546,20 @@ class _ApplyJobState extends State<ApplyJob> {
     );
   }
 
-  Widget buildCoverImage() => Container(
+  Widget buildCoverImage(String img) => Container(
         color: greyb,
         child: Image.network(
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAB10FSGA6Wkse91jtn1UG2WfU7nc39KXshbVHM-J4Xg&s',
+          img,
           width: double.infinity,
           height: 220,
           fit: BoxFit.cover,
         ),
       );
 
-  Widget buildProfileImage() => CircleAvatar(
+  Widget buildProfileImage(String img) => CircleAvatar(
         radius: 60,
         backgroundColor: Colors.white,
-        backgroundImage: NetworkImage(
-            'https://i.pinimg.com/564x/53/d8/14/53d81454e5df2ccaab75e4004a6e4190.jpg'),
+        backgroundImage: NetworkImage(img),
       );
 
   Future<void> _applyNotifications(BuildContext context) {
