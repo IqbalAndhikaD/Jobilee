@@ -73,12 +73,23 @@ class _ApplyJobState extends State<ApplyJob> {
     return await appliedJobs.get();
   }
 
+  Future<DocumentSnapshot<Map<String, dynamic>>> getJobVacationData(
+      String jobVacationId) async {
+    DocumentReference<Map<String, dynamic>> jobVacations = FirebaseFirestore
+        .instance
+        .collection("job_vacations")
+        .doc(jobVacationId);
+
+    return jobVacations.get();
+  }
+
   Future<void> _applyJob(
     String job_id,
     BuildContext context,
   ) async {
     CollectionReference<Map<String, dynamic>> jobApplications =
         FirebaseFirestore.instance.collection("job_applications");
+    DocumentSnapshot job = await getJobVacationData(job_id);
     
     try {
       await jobApplications.add({
@@ -87,6 +98,8 @@ class _ApplyJobState extends State<ApplyJob> {
         'status': 'pending',
         'applied_at': FieldValue.serverTimestamp(),
       });
+      await AuthenService().pushNotification('Job applied',
+          'Job "${job.get('position')} - ${job.get('company_name')}" has been applied');
       Fluttertoast.showToast(msg: "Job Applied");
       _applyNotifications(context);
     } catch (e) {

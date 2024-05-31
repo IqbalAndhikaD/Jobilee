@@ -50,6 +50,16 @@ class _HomeState extends State<Home> {
     return await jobVacancies.get();
   }
 
+  Future<DocumentSnapshot<Map<String, dynamic>>> getJobVacationData(
+      String jobVacationId) async {
+    DocumentReference<Map<String, dynamic>> jobVacations = FirebaseFirestore
+        .instance
+        .collection("job_vacations")
+        .doc(jobVacationId);
+
+    return jobVacations.get();
+  }
+
   Future<QuerySnapshot> _getJobTotalApplicant(
     String job_id,
   ) async {
@@ -88,16 +98,21 @@ class _HomeState extends State<Home> {
     CollectionReference savedJobs =
         FirebaseFirestore.instance.collection("job_saved");
     QuerySnapshot res = await _isJobSaved(job_id);
+    DocumentSnapshot job = await getJobVacationData(job_id);
 
     try {
       if (res.docs.isNotEmpty) {
         await savedJobs.doc(res.docs[0].id).delete();
+        await AuthenService().pushNotification('Job successfully unsaved',
+            'Job "${job.get('position')} - ${job.get('company_name')}" has been unsaved');
         Fluttertoast.showToast(msg: "Job Unsaved");
       } else {
         await savedJobs.add({
           'user_id': user!.uid,
           'job_vacation_id': job_id,
         });
+        await AuthenService().pushNotification('Job successfully saved',
+            'Job "${job.get('position')} - ${job.get('company_name')}" has been saved');
         Fluttertoast.showToast(msg: "Job Saved");
       }
     } catch (e) {

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/rendering.dart';
 import 'package:tubes/rsc/log.dart';
 import '../exception/auth_exception.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class AuthenService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -89,6 +90,21 @@ class AuthenService {
       'userId': userId,
       'profile_pic': 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
     }); 
+  }
+
+  Future<void> pushNotification(
+    String title,
+    String message,
+  ) async {
+    DatabaseReference databaseReference =
+        FirebaseDatabase.instance.ref().child('notifications').child(currentUser!.uid);
+    
+    // push to /notifications/userId/datetime
+    databaseReference.push().set({
+      'title': title,
+      'msg': message,
+      'datetime': DateTime.now().toIso8601String(),
+    });
   }
 
   Future<void> signOut() async {
