@@ -3,7 +3,13 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:tubes/editprofile.dart';
 import 'package:tubes/login.dart';
+
+import 'package:tubes/authentication/authen_service.dart';
 import 'package:tubes/rsc/colors.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -13,7 +19,25 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-    bool _isSecurePassword = false;
+  bool _isSecurePassword = false;
+  final user = AuthenService().currentUser;
+  dynamic userInfo;
+
+  Future<dynamic> getUserInfo() async {
+    var result = await AuthenService().getUserInfo();
+    if (result != null) {
+      setState(() {
+        userInfo = result;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUserInfo();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,11 +65,10 @@ class _ProfileState extends State<Profile> {
                           width: 120,
                           height: 120,
                           child: ProfilePicture(
-                            name: 'Ashel Alifyaa',
-                            radius: 55,
+                            name: userInfo?['username'] ?? '',
+                            radius: 36,
                             fontsize: 20,
-                            img:
-                                'https://i.pinimg.com/736x/d8/ef/ce/d8efce4fface78988c6cba03bca0fb6a.jpg',
+                            img: userInfo?['profile_pic'] ?? '',
                           ),
                         ),
                         // Icon change ava/pp
@@ -84,7 +107,7 @@ class _ProfileState extends State<Profile> {
                     fontWeight: FontWeight.bold),
               ),
               Text(
-                'Ashel Alifyaa',
+                userInfo?['username'] ?? '',
                 style: TextStyle(
                     fontSize: 20,
                     fontFamily: 'GreycliffCF',

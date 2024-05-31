@@ -15,6 +15,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/foundation.dart';
+import 'package:tubes/rsc/log.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key, required this.title});
@@ -45,6 +46,28 @@ class _HomeState extends State<Home> {
         FirebaseFirestore.instance.collection("job_vacations");
 
     return await jobVacancies.get();
+  }
+
+  Future<QuerySnapshot> _isJobApplied(
+    String job_id,
+  ) async {
+    Query<Map<String, dynamic>> appliedJobs = FirebaseFirestore.instance
+        .collection("job_applications")
+        .where('user_id', isEqualTo: user!.uid)
+        .where('job_vacation_id', isEqualTo: job_id);
+
+    return await appliedJobs.get();
+  }
+
+  Future<QuerySnapshot> _isJobSaved(
+    String job_id,
+  ) async {
+    Query<Map<String, dynamic>> savedJobs = FirebaseFirestore.instance
+        .collection("job_saved")
+        .where('user_id', isEqualTo: user!.uid)
+        .where('job_vacation_id', isEqualTo: job_id);
+
+    return await savedJobs.get();
   }
 
   Widget _jobVacanciesList() {
@@ -166,32 +189,60 @@ class _HomeState extends State<Home> {
                                         Padding(
                                           padding:
                                               const EdgeInsets.only(right: 8),
-                                          child: TextButton(
-                                            style: TextButton.styleFrom(
-                                              backgroundColor: lblue,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                              ),
-                                              minimumSize: Size(60, 0),
-                                            ),
-                                            onPressed: () {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        ApplyJob(),
-                                                  ));
-                                            },
-                                            child: const Text(
-                                              'Apply',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontFamily: 'GreycliffCF',
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w600),
-                                            ),
-                                          ),
+                                          child: FutureBuilder(
+                                              future: _isJobApplied(doc.id),
+                                              builder: (context,
+                                                  AsyncSnapshot<QuerySnapshot>
+                                                      res) {
+                                                if (res.connectionState ==
+                                                    ConnectionState.done) {
+                                                  return TextButton(
+                                                    style: TextButton.styleFrom(
+                                                      backgroundColor:
+                                                          res.data!.docs.isEmpty
+                                                              ? lblue
+                                                              : Colors.grey,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(20),
+                                                      ),
+                                                      minimumSize: Size(60, 0),
+                                                    ),
+                                                    onPressed: () {
+                                                      if (res
+                                                          .data!.docs.isEmpty) {
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder:
+                                                                  (context) =>
+                                                                      ApplyJob(),
+                                                            ));
+                                                      }
+                                                      ;
+                                                    },
+                                                    child: Text(
+                                                      res.data!.docs.isEmpty
+                                                          ? 'Apply'
+                                                          : 'Applied',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontFamily:
+                                                              'GreycliffCF',
+                                                          fontSize: 10,
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                    ),
+                                                  );
+                                                } else if (snapshot
+                                                        .connectionState ==
+                                                    ConnectionState.none) {
+                                                  return Text("No data");
+                                                }
+                                                return CircularProgressIndicator();
+                                              }),
                                         )
                                       ],
                                     ),
@@ -205,8 +256,25 @@ class _HomeState extends State<Home> {
                                             color: bblue,
                                           ),
                                           child: IconButton(
-                                            icon: Icon(
-                                                Icons.bookmark_border_outlined),
+                                            icon: FutureBuilder(
+                                                future: _isJobSaved(doc.id),
+                                                builder: (context,
+                                                    AsyncSnapshot<QuerySnapshot>
+                                                        res) {
+                                                  if (res.connectionState ==
+                                                      ConnectionState.done) {
+                                                    return Icon(res.data!.docs
+                                                            .isNotEmpty
+                                                        ? Icons.bookmark
+                                                        : Icons
+                                                            .bookmark_border_outlined);
+                                                  } else if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState.none) {
+                                                    return Text("No data");
+                                                  }
+                                                  return CircularProgressIndicator();
+                                                }),
                                             color: lblue,
                                             iconSize: 20,
                                             onPressed: () {},
@@ -254,17 +322,16 @@ class _HomeState extends State<Home> {
                     width: MediaQuery.of(context).size.width,
                     child: Stack(
                       children: [
-                        const Row(
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           textDirection: TextDirection.ltr,
                           children: [
                             SizedBox(height: 90),
                             ProfilePicture(
-                              name: 'Ashel',
+                              name: userInfo?['username'] ?? '',
                               radius: 36,
                               fontsize: 20,
-                              img:
-                                  'https://i.pinimg.com/736x/d8/ef/ce/d8efce4fface78988c6cba03bca0fb6a.jpg',
+                              img: userInfo?['profile_pic'] ?? '',
                             ),
                           ],
                         ),
@@ -289,7 +356,7 @@ class _HomeState extends State<Home> {
                                     children: [
                                       TextSpan(
                                           text:
-                                              'Hello, ${userInfo?['username']}'),
+                                              'Hello, ${userInfo?['username'] ?? ''}'),
                                     ]),
                               ),
 
