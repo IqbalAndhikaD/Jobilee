@@ -24,6 +24,11 @@ class _LoadingState extends State<Loading> {
         setState(() {
           isLogin = false;
         });
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Login(),
+            ));
       } else {
         if (userInfo == null) {
           var result = await AuthenService().getUserInfo();

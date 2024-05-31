@@ -7,6 +7,7 @@ import 'package:tubes/login.dart';
 import 'package:tubes/authentication/authen_service.dart';
 import 'package:tubes/rsc/colors.dart';
 
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -29,6 +30,21 @@ class _ProfileState extends State<Profile> {
       setState(() {
         userInfo = result;
       });
+    }
+  }
+
+  void _signOut() async {
+    try {
+      await AuthenService().signOut();
+      Fluttertoast.showToast(msg: "Logged Out");
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Login(),
+          ));
+    } catch (e) {
+      final errorMsg = e.toString();
+      Fluttertoast.showToast(msg: errorMsg);
     }
   }
 
@@ -170,11 +186,7 @@ class _ProfileState extends State<Profile> {
                       ),
                     ),
                     onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Login(),
-                          ));
+                      _signOut();
                     },
                     child: Text(
                       'Logout',
