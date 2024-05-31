@@ -23,18 +23,24 @@ class _LoginState extends State<Login> {
 
   void handleLogin() async {
     try {
-      await AuthenService().loginWithEmailAndPassword(
+      var user = await AuthenService().loginWithEmailAndPassword(
         email: _email.text,
         password: _password.text,
       );
-      Fluttertoast.showToast(msg: "Successful");
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-            builder: (context) => NavBar(
-                  index: 0,
-                )),
-      );
+
+      if (user == AuthResultStatus.successful) {
+        Fluttertoast.showToast(msg: "Successful");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => NavBar(
+                    index: 0,
+                  )),
+        );
+      } else {
+        final errorMsg = AuthException.generateExceptionMessage(user);
+        Fluttertoast.showToast(msg: errorMsg);
+      }
     } catch (e) {
       final errorMsg = AuthException.generateExceptionMessage(e);
       Fluttertoast.showToast(msg: errorMsg);
