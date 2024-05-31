@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 
 import 'package:tubes/authentication/authen_service.dart';
+import 'package:tubes/notification.dart';
 import 'package:tubes/rsc/colors.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
@@ -232,39 +233,41 @@ class _SavedState extends State<Saved> {
                                                     color: bblue,
                                                   ),
                                                   child: IconButton(
-                                                    icon: FutureBuilder(
-                                                        future: _isJobSaved(doc.get(
-                                                            'job_vacation_id')),
-                                                        builder: (context,
-                                                            AsyncSnapshot<
-                                                                    QuerySnapshot>
-                                                                res) {
-                                                          if (res.connectionState ==
-                                                              ConnectionState
-                                                                  .done) {
-                                                            return Icon(res
-                                                                    .data!
-                                                                    .docs
-                                                                    .isNotEmpty
-                                                                ? Icons.bookmark
-                                                                : Icons
-                                                                    .bookmark_border_outlined);
-                                                          } else if (snapshot
-                                                                  .connectionState ==
-                                                              ConnectionState
-                                                                  .none) {
-                                                            return Text(
-                                                                "No data");
-                                                          }
-                                                          return CircularProgressIndicator();
-                                                        }),
-                                                    color: lblue,
-                                                    iconSize: 20,
-                                                    onPressed: () async {
-                                                        await _saveJob(doc.get('job_vacation_id'));
+                                                      icon: FutureBuilder(
+                                                          future: _isJobSaved(
+                                                              doc.get(
+                                                                  'job_vacation_id')),
+                                                          builder: (context,
+                                                              AsyncSnapshot<
+                                                                      QuerySnapshot>
+                                                                  res) {
+                                                            if (res.connectionState ==
+                                                                ConnectionState
+                                                                    .done) {
+                                                              return Icon(res
+                                                                      .data!
+                                                                      .docs
+                                                                      .isNotEmpty
+                                                                  ? Icons
+                                                                      .bookmark
+                                                                  : Icons
+                                                                      .bookmark_border_outlined);
+                                                            } else if (snapshot
+                                                                    .connectionState ==
+                                                                ConnectionState
+                                                                    .none) {
+                                                              return Text(
+                                                                  "No data");
+                                                            }
+                                                            return CircularProgressIndicator();
+                                                          }),
+                                                      color: lblue,
+                                                      iconSize: 20,
+                                                      onPressed: () async {
+                                                        await _saveJob(doc.get(
+                                                            'job_vacation_id'));
                                                         setState(() {});
-                                                      }
-                                                  ),
+                                                      }),
                                                 ),
                                               ],
                                             ),
@@ -387,8 +390,13 @@ class _SavedState extends State<Saved> {
                                                   BorderRadius.circular(99),
                                             ),
                                           ),
-                                          onPressed: () =>
-                                              _showNotifications(context),
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => Notif(),
+                                                ));
+                                          },
                                           child: Icon(
                                             Icons.notifications_none_outlined,
                                             color: lblue,
@@ -487,26 +495,6 @@ class _SavedState extends State<Saved> {
                   Flexible(child: _savedJobsList())
                 ],
               ))),
-    );
-  }
-
-  Future<void> _showNotifications(BuildContext context) {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Notifications'),
-          content: const Text('You have no new notifications.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Close'),
-            ),
-          ],
-        );
-      },
     );
   }
 }

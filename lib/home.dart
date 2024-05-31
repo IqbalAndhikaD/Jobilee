@@ -5,6 +5,7 @@ import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:tubes/applyjob.dart';
 import 'package:tubes/find.dart';
 import 'package:tubes/navbar.dart';
+import 'package:tubes/notification.dart';
 import 'package:tubes/rsc/colors.dart';
 
 import 'package:tubes/authentication/authen_service.dart';
@@ -84,7 +85,8 @@ class _HomeState extends State<Home> {
   Future<void> _saveJob(
     String job_id,
   ) async {
-    CollectionReference savedJobs = FirebaseFirestore.instance.collection("job_saved");
+    CollectionReference savedJobs =
+        FirebaseFirestore.instance.collection("job_saved");
     QuerySnapshot res = await _isJobSaved(job_id);
 
     try {
@@ -153,23 +155,26 @@ class _HomeState extends State<Home> {
                                           fontFamily: 'GreycliffCF'),
                                     ),
                                     FutureBuilder(
-                                      future: _getJobTotalApplicant(doc.id),
-                                      builder: (context, AsyncSnapshot<QuerySnapshot> res) {
-                                        if (res.connectionState == ConnectionState.done) {
-                                          return Text(
-                                            res.data!.docs.length.toString() + ' Applicants',
-                                            style: TextStyle(
-                                                fontSize: 10,
-                                                color: Colors.grey,
-                                                fontWeight: FontWeight.normal,
-                                                fontFamily: 'GreycliffCF'),
-                                          );
-                                        } else if (res.connectionState ==
-                                            ConnectionState.none) {
-                                          return Text("No data");
-                                        }
-                                        return CircularProgressIndicator();
-                                    }),
+                                        future: _getJobTotalApplicant(doc.id),
+                                        builder: (context,
+                                            AsyncSnapshot<QuerySnapshot> res) {
+                                          if (res.connectionState ==
+                                              ConnectionState.done) {
+                                            return Text(
+                                              res.data!.docs.length.toString() +
+                                                  ' Applicants',
+                                              style: TextStyle(
+                                                  fontSize: 10,
+                                                  color: Colors.grey,
+                                                  fontWeight: FontWeight.normal,
+                                                  fontFamily: 'GreycliffCF'),
+                                            );
+                                          } else if (res.connectionState ==
+                                              ConnectionState.none) {
+                                            return Text("No data");
+                                          }
+                                          return CircularProgressIndicator();
+                                        }),
                                     const SizedBox(height: 6),
                                     Row(
                                       crossAxisAlignment:
@@ -263,8 +268,8 @@ class _HomeState extends State<Home> {
                                                               builder:
                                                                   (context) =>
                                                                       ApplyJob(
-                                                                        job_id: doc.id,
-                                                                      ),
+                                                                job_id: doc.id,
+                                                              ),
                                                             ));
                                                       }
                                                       ;
@@ -295,33 +300,39 @@ class _HomeState extends State<Home> {
                                     Column(
                                       children: [
                                         Ink(
-                                          width: 40,
-                                          height: 40,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: bblue,
-                                          ),
-                                          child: FutureBuilder(
-                                            future: _isJobSaved(doc.id),
-                                            builder: (context, AsyncSnapshot<QuerySnapshot> res) {
-                                              if (res.connectionState == ConnectionState.done) {
-                                                return IconButton(
-                                                    icon: Icon(res.data!.docs.isNotEmpty
-                                                                ? Icons.bookmark
-                                                                : Icons.bookmark_border_outlined),
-                                                    color: lblue,
-                                                    iconSize: 20,
-                                                    onPressed: () async {
-                                                      await _saveJob(doc.id);
-                                                      setState(() {});
-                                                    }
-                                                );
-                                              } else if (snapshot.connectionState == ConnectionState.none) {
-                                                return Text("No data");
-                                              }
-                                              return CircularProgressIndicator();
-                                            })
-                                        ),
+                                            width: 40,
+                                            height: 40,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: bblue,
+                                            ),
+                                            child: FutureBuilder(
+                                                future: _isJobSaved(doc.id),
+                                                builder: (context,
+                                                    AsyncSnapshot<QuerySnapshot>
+                                                        res) {
+                                                  if (res.connectionState ==
+                                                      ConnectionState.done) {
+                                                    return IconButton(
+                                                        icon: Icon(res.data!
+                                                                .docs.isNotEmpty
+                                                            ? Icons.bookmark
+                                                            : Icons
+                                                                .bookmark_border_outlined),
+                                                        color: lblue,
+                                                        iconSize: 20,
+                                                        onPressed: () async {
+                                                          await _saveJob(
+                                                              doc.id);
+                                                          setState(() {});
+                                                        });
+                                                  } else if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState.none) {
+                                                    return Text("No data");
+                                                  }
+                                                  return CircularProgressIndicator();
+                                                })),
                                       ],
                                     ),
                                   ],
@@ -441,8 +452,13 @@ class _HomeState extends State<Home> {
                                                   BorderRadius.circular(99),
                                             ),
                                           ),
-                                          onPressed: () =>
-                                              _showNotifications(context),
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => Notif(),
+                                                ));
+                                          },
                                           child: Icon(
                                             Icons.notifications_none_outlined,
                                             color: lblue,
@@ -607,26 +623,6 @@ class _HomeState extends State<Home> {
                   Flexible(child: _jobVacanciesList())
                 ],
               ))),
-    );
-  }
-
-  Future<void> _showNotifications(BuildContext context) {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Notifications'),
-          content: const Text('You have no new notifications.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Close'),
-            ),
-          ],
-        );
-      },
     );
   }
 }

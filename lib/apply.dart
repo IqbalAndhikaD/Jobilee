@@ -5,6 +5,7 @@ import 'package:tubes/applyjob.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 
 import 'package:tubes/authentication/authen_service.dart';
+import 'package:tubes/notification.dart';
 import 'package:tubes/rsc/colors.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -326,8 +327,13 @@ class _ApplyState extends State<Apply> {
                                                   BorderRadius.circular(99),
                                             ),
                                           ),
-                                          onPressed: () =>
-                                              _showNotifications(context),
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => Notif(),
+                                                ));
+                                          },
                                           child: Icon(
                                             Icons.notifications_none_outlined,
                                             color: lblue,
@@ -429,23 +435,4 @@ class _ApplyState extends State<Apply> {
     );
   }
 
-  Future<void> _showNotifications(BuildContext context) {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Notifications'),
-          content: const Text('You have no new notifications.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 }
