@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:tubes/applyjob.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 
@@ -8,10 +6,7 @@ import 'package:tubes/authentication/authen_service.dart';
 import 'package:tubes/notification.dart';
 import 'package:tubes/rsc/colors.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tubes/rsc/log.dart';
 
 class Apply extends StatefulWidget {
   const Apply({super.key});
@@ -71,11 +66,11 @@ class _ApplyState extends State<Apply> {
   Color _getStatusBGColor(String status) {
     switch (status) {
       case 'pending':
-        return Color(0xFFC0D5FF);
+        return const Color(0xFFC0D5FF);
       case 'accepted':
-        return Color(0xFFC0FFD5);
+        return const Color(0xFFC0FFD5);
       case 'rejected':
-        return Color(0xFFFFC0C0);
+        return const Color(0xFFFFC0C0);
       default:
         return const Color(0xFFC3C3C3);
     }
@@ -182,7 +177,7 @@ class _ApplyState extends State<Apply> {
                                                             BorderRadius
                                                                 .circular(20),
                                                       ),
-                                                      minimumSize: Size(60, 0),
+                                                      minimumSize: const Size(60, 0),
                                                     ),
                                                     onPressed: () {
                                                       Navigator.push(
@@ -216,16 +211,16 @@ class _ApplyState extends State<Apply> {
                             ));
                       } else if (snapshot.connectionState ==
                           ConnectionState.none) {
-                        return Text("No data");
+                        return const Text("No data");
                       }
-                      return CircularProgressIndicator();
+                      return const CircularProgressIndicator();
                     }))
                 .toList(),
           );
         } else if (snapshot.connectionState == ConnectionState.none) {
-          return Text("No data");
+          return const Text("No data");
         }
-        return CircularProgressIndicator();
+        return const CircularProgressIndicator();
       },
     );
   }
@@ -245,7 +240,7 @@ class _ApplyState extends State<Apply> {
               child: Column(
                 children: [
                   // PP-Nama-Notif
-                  Container(
+                  SizedBox(
                     height: 60,
                     width: MediaQuery.of(context).size.width,
                     child: Stack(
@@ -255,7 +250,7 @@ class _ApplyState extends State<Apply> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           textDirection: TextDirection.ltr,
                           children: [
-                            SizedBox(height: 90),
+                            const SizedBox(height: 90),
                             ProfilePicture(
                               name: userInfo?['username'] ?? '',
                               radius: 36,
@@ -331,7 +326,7 @@ class _ApplyState extends State<Apply> {
                                             Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
-                                                  builder: (context) => Notif(),
+                                                  builder: (context) => const Notif(),
                                                 ));
                                           },
                                           child: Icon(

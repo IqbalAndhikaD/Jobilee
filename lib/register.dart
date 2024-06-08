@@ -3,11 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tubes/authentication/authen_service.dart';
-import 'package:tubes/home.dart';
 import 'package:tubes/login.dart';
 import 'package:tubes/navbar.dart';
 import 'package:tubes/rsc/colors.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../exception/auth_exception.dart';
 
 class Register extends StatefulWidget {
@@ -298,56 +296,4 @@ class _LoginState extends State<Register> {
     );
   }
 
-  Future<void> _registNotifications(BuildContext context) {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          icon: Icon(
-            Icons.task_alt_rounded,
-            size: 150,
-            color: lblue,
-          ),
-          title: const Text(
-            'Sign Up Successfully',
-            style: TextStyle(
-                color: Colors.black,
-                fontFamily: 'GreycliffCF',
-                fontWeight: FontWeight.w600),
-          ),
-          content: const Text(
-            'Your account has been created. You may now log in to access your account.',
-            textAlign: TextAlign.center,
-          ),
-          actions: <Widget>[
-            TextButton(
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.all(10),
-                  fixedSize: Size(340, 0),
-                  backgroundColor: lblue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Login(),
-                      ));
-                },
-                child: Text(
-                  'Confirm',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'GreycliffCF',
-                      fontWeight: FontWeight.w600),
-                )),
-          ],
-        );
-      },
-    );
-  }
 }

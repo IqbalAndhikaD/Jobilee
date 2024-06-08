@@ -1,4 +1,4 @@
-// ignore_for_file: use_super_parameters, prefer_const_literals_to_create_immutables, prefer_const_constructors, sized_box_for_whitespace
+// ignore_for_file: use_super_parameters, prefer_const_literals_to_create_immutables, prefer_const_constructors, sized_box_for_whitespace, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -6,7 +6,6 @@ import 'package:tubes/authentication/authen_service.dart';
 import 'package:tubes/navbar.dart';
 import 'package:tubes/register.dart';
 import 'package:tubes/rsc/colors.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../exception/auth_exception.dart';
 
 class Login extends StatefulWidget {

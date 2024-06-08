@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_import, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
@@ -8,12 +10,9 @@ import 'package:tubes/authentication/authen_service.dart';
 import 'package:tubes/rsc/colors.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Profile extends StatefulWidget {
-  const Profile({Key? key}) : super(key: key);
+  const Profile({super.key});
 
   @override
   State<Profile> createState() => _ProfileState();
@@ -40,7 +39,7 @@ class _ProfileState extends State<Profile> {
       Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => Login(),
+            builder: (context) => const Login(),
           ));
     } catch (e) {
       final errorMsg = e.toString();
@@ -63,7 +62,7 @@ class _ProfileState extends State<Profile> {
           child: Column(
             children: [
               // Judul = Profile
-              Text(
+              const Text(
                 'Profile',
                 style: TextStyle(
                     fontSize: 24,
@@ -87,34 +86,12 @@ class _ProfileState extends State<Profile> {
                             img: userInfo?['profile_pic'] ?? '',
                           ),
                         ),
-                        // Icon change ava/pp
-                        Positioned(
-                          left: 80,
-                          top: 85,
-                          child: Row(
-                            children: [
-                              Container(
-                                  width: 35,
-                                  height: 35,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: lblue,
-                                  ),
-                                  child: IconButton(
-                                    icon: Icon(Icons.edit),
-                                    color: Colors.white,
-                                    iconSize: 19,
-                                    onPressed: () {},
-                                  )),
-                            ],
-                          ),
-                        ),
                       ],
                     ),
                   ],
                 ),
               ),
-              Text(
+              const Text(
                 'Fresh Graduate',
                 style: TextStyle(
                     fontSize: 12,
@@ -124,7 +101,7 @@ class _ProfileState extends State<Profile> {
               ),
               Text(
                 userInfo?['username'] ?? '',
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 20,
                     fontFamily: 'GreycliffCF',
                     fontWeight: FontWeight.bold),
@@ -134,11 +111,11 @@ class _ProfileState extends State<Profile> {
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 0.0, vertical: 5),
-                child: Container(
+                child: SizedBox(
                   width: 200,
                   child: TextButton(
                       style: TextButton.styleFrom(
-                        padding: EdgeInsets.all(9),
+                        padding: const EdgeInsets.all(9),
                         backgroundColor: lblue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
@@ -148,10 +125,10 @@ class _ProfileState extends State<Profile> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => editProfile(),
+                            builder: (context) => editProfile(currentProfilePic: '', onProfilePicUpdated: (String value) {  },),
                           ));
                       },
-                      child: Row(
+                      child: const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
@@ -175,11 +152,11 @@ class _ProfileState extends State<Profile> {
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 0.0, vertical: 14),
-                child: Container(
+                child: SizedBox(
                   width: 350,
                   child: TextButton(
                     style: TextButton.styleFrom(
-                      padding: EdgeInsets.all(9),
+                      padding: const EdgeInsets.all(9),
                       backgroundColor: lblue,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
@@ -188,7 +165,7 @@ class _ProfileState extends State<Profile> {
                     onPressed: () {
                       _signOut();
                     },
-                    child: Text(
+                    child: const Text(
                       'Logout',
                       style: TextStyle(
                           fontSize: 16,
@@ -213,8 +190,8 @@ class _ProfileState extends State<Profile> {
         });
       },
       icon: _isSecurePassword
-          ? Icon(Icons.visibility)
-          : Icon(Icons.visibility_off),
+          ? const Icon(Icons.visibility)
+          : const Icon(Icons.visibility_off),
       color: lblue,
     );
   }

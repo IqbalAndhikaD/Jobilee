@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:tubes/apply.dart';
 import 'package:tubes/find.dart';
@@ -9,19 +11,19 @@ import 'package:tubes/saved.dart';
 class NavBar extends StatefulWidget {
   final int index;
 
-  NavBar({required this.index});
+  const NavBar({super.key, required this.index});
 
   @override
-  _NavBarState createState() => new _NavBarState();
+  _NavBarState createState() => _NavBarState();
 }
 
 class _NavBarState extends State<NavBar> {
   final screens = [
-    Home(title: ''),
-    Apply(),
-    Find(),
-    Saved(),
-    Profile(),
+    const Home(title: ''),
+    const Apply(),
+    const Find(),
+    const Saved(),
+    const Profile(),
   ];
 
   @override
@@ -39,14 +41,14 @@ class _NavBarState extends State<NavBar> {
       bottomNavigationBar: NavigationBarTheme(
         data: NavigationBarThemeData(
           indicatorColor: lblue,
-          labelTextStyle: MaterialStateProperty.all(TextStyle(fontSize: 0)),
+          labelTextStyle: MaterialStateProperty.all(const TextStyle(fontSize: 0)),
         ),
         child: NavigationBar(
           height: 60,
           backgroundColor: Colors.white,
           selectedIndex: _index,
           onDestinationSelected: (index) => setState(() => _index = index),
-          destinations: [
+          destinations: const [
             NavigationDestination(
               icon: Icon(
                 Icons.home_outlined,

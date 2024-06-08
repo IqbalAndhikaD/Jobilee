@@ -1,10 +1,9 @@
-import 'dart:ui';
+
+// ignore_for_file: camel_case_types, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
-import 'package:tubes/login.dart';
-import 'package:tubes/profile.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:tubes/rsc/log.dart';
 import 'navbar.dart';
 
@@ -12,12 +11,16 @@ import 'package:tubes/authentication/authen_service.dart';
 import 'package:tubes/rsc/colors.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class editProfile extends StatefulWidget {
-  const editProfile({super.key});
+  final String currentProfilePic;
+  final ValueSetter<String> onProfilePicUpdated;
+  const editProfile({
+    super.key,
+    required this.currentProfilePic,
+    required this.onProfilePicUpdated,
+  });
 
   @override
   State<editProfile> createState() => _editProfileState();
@@ -42,14 +45,15 @@ class _editProfileState extends State<editProfile> {
     }
   }
 
-  Future<void> handleUpdate(
-    BuildContext context
-  ) async {
-    AppLog.info(_username.text + ' ' + _password.text);
+  Future<void> handleUpdate(BuildContext context) async {
+    AppLog.info('${_username.text} ${_password.text}');
     try {
       if (_username.text != '') {
         await user!.updateDisplayName(_username.text);
-        await FirebaseFirestore.instance.collection('users').doc(user!.uid).update({
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user!.uid)
+            .update({
           'username': _username.text,
         });
       }
@@ -71,11 +75,21 @@ class _editProfileState extends State<editProfile> {
     _formKey.currentState?.validate(); // call validate here
   }
 
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _getImage(ImageSource source) async {
+    final pickedFile = await _picker.pickImage(source: source);
+    if (pickedFile != null) {
+      setState(() {
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData.fallback(),
+        iconTheme: const IconThemeData.fallback(),
       ),
       body: Form(
         key: _formKey,
@@ -85,7 +99,7 @@ class _editProfileState extends State<editProfile> {
             child: Column(
               children: [
                 // Judul = Profile
-                Text(
+                const Text(
                   'Profile',
                   style: TextStyle(
                       fontSize: 24,
@@ -123,10 +137,56 @@ class _editProfileState extends State<editProfile> {
                                       color: lblue,
                                     ),
                                     child: IconButton(
-                                      icon: Icon(Icons.edit),
+                                      icon: const Icon(Icons.edit),
                                       color: Colors.white,
                                       iconSize: 19,
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                            backgroundColor: Colors.white,
+                                            content: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                ListTile(
+                                                  title: Text(
+                                                    'Camera',
+                                                    style: TextStyle(
+                                                      color: lblue,
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                        FontWeight.bold,
+                                                      fontFamily:
+                                                        'GreycliffCF'),
+                                                  ),
+                                                  onTap: () {
+                                                    Navigator.pop(context);
+                                                    _getImage(
+                                                        ImageSource.camera);
+                                                  },
+                                                ),
+                                                ListTile(
+                                                  title: Text(
+                                                    'Gallery',
+                                                    style: TextStyle(
+                                                      color: lblue,
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontFamily:
+                                                            'GreycliffCF'),
+                                                  ),
+                                                  onTap: () {
+                                                    Navigator.pop(context);
+                                                    _getImage(
+                                                        ImageSource.gallery);
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
                                     )),
                               ],
                             ),
@@ -136,7 +196,7 @@ class _editProfileState extends State<editProfile> {
                     ],
                   ),
                 ),
-                Text(
+                const Text(
                   'Fresh Graduate',
                   style: TextStyle(
                       fontSize: 12,
@@ -147,16 +207,16 @@ class _editProfileState extends State<editProfile> {
 
                 Text(
                   userInfo?['username'] ?? '',
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 20,
                       fontFamily: 'GreycliffCF',
                       fontWeight: FontWeight.bold),
                 ),
 
-                SizedBox(height: 9),
+                const SizedBox(height: 9),
 
                 // Username Title
-                Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                const Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                   Text(
                     'Username',
                     style: TextStyle(
@@ -174,21 +234,19 @@ class _editProfileState extends State<editProfile> {
                     }
                     return null;
                   },
-                  decoration: InputDecoration(
-                            hintText: 'Enter your username',
-                            hintStyle: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 12,
-                                fontFamily: 'GreycliffCF'
-                            )
-                  ),
+                  decoration: const InputDecoration(
+                      hintText: 'Enter your username',
+                      hintStyle: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                          fontFamily: 'GreycliffCF')),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
 
                 // Password Title
-                Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                const Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                   Text(
                     'Password',
                     style: TextStyle(
@@ -201,14 +259,14 @@ class _editProfileState extends State<editProfile> {
                 TextFormField(
                   controller: _password,
                   obscureText: true,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                       hintText: 'Enter your password',
                       hintStyle: TextStyle(
                           color: Colors.grey,
                           fontSize: 12,
                           fontFamily: 'GreycliffCF')),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
 
@@ -216,23 +274,22 @@ class _editProfileState extends State<editProfile> {
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 0.0, vertical: 5),
-                  child: Container(
+                  child: SizedBox(
                     width: 200,
                     child: TextButton(
                         style: TextButton.styleFrom(
-                          padding: EdgeInsets.all(9),
+                          padding: const EdgeInsets.all(9),
                           backgroundColor: lblue,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),
                         ),
                         onPressed: () => {
-                          AppLog.info(_formKey.currentState?.validate()),
-                          if (_formKey.currentState?.validate() ?? false) {
-                            handleUpdate(context)
-                          }
-                        },
-                        child: Row(
+                              AppLog.info(_formKey.currentState?.validate()),
+                              if (_formKey.currentState?.validate() ?? false)
+                                {handleUpdate(context)}
+                            },
+                        child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
@@ -263,8 +320,8 @@ class _editProfileState extends State<editProfile> {
         });
       },
       icon: _isSecurePassword
-          ? Icon(Icons.visibility)
-          : Icon(Icons.visibility_off),
+          ? const Icon(Icons.visibility)
+          : const Icon(Icons.visibility_off),
       color: lblue,
     );
   }
@@ -294,8 +351,8 @@ class _editProfileState extends State<editProfile> {
           actions: <Widget>[
             TextButton(
                 style: TextButton.styleFrom(
-                  padding: EdgeInsets.all(10),
-                  fixedSize: Size(340, 0),
+                  padding: const EdgeInsets.all(10),
+                  fixedSize: const Size(340, 0),
                   backgroundColor: lblue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -305,10 +362,10 @@ class _editProfileState extends State<editProfile> {
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => NavBar(index: 4),
+                        builder: (context) => const NavBar(index: 4),
                       ));
                 },
-                child: Text(
+                child: const Text(
                   'See My Profile',
                   textAlign: TextAlign.center,
                   style: TextStyle(

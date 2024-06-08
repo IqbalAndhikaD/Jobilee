@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:tubes/applyjob.dart';
@@ -7,8 +6,6 @@ import 'package:tubes/authentication/authen_service.dart';
 import 'package:tubes/notification.dart';
 import 'package:tubes/rsc/colors.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Find extends StatefulWidget {
@@ -42,33 +39,33 @@ class _FindState extends State<Find> {
   }
 
   Future<QuerySnapshot> _getJobTotalApplicant(
-    String job_id,
+    String jobId,
   ) async {
     Query<Map<String, dynamic>> appliedJobs = FirebaseFirestore.instance
         .collection("job_applications")
-        .where('job_vacation_id', isEqualTo: job_id);
+        .where('job_vacation_id', isEqualTo: jobId);
 
     return await appliedJobs.get();
   }
 
   Future<QuerySnapshot> _isJobApplied(
-    String job_id,
+    String jobId,
   ) async {
     Query<Map<String, dynamic>> appliedJobs = FirebaseFirestore.instance
         .collection("job_applications")
         .where('user_id', isEqualTo: user!.uid)
-        .where('job_vacation_id', isEqualTo: job_id);
+        .where('job_vacation_id', isEqualTo: jobId);
 
     return await appliedJobs.get();
   }
 
   Future<QuerySnapshot> _isJobSaved(
-    String job_id,
+    String jobId,
   ) async {
     Query<Map<String, dynamic>> savedJobs = FirebaseFirestore.instance
         .collection("job_saved")
         .where('user_id', isEqualTo: user!.uid)
-        .where('job_vacation_id', isEqualTo: job_id);
+        .where('job_vacation_id', isEqualTo: jobId);
 
     return await savedJobs.get();
   }
@@ -128,9 +125,8 @@ class _FindState extends State<Find> {
                                         if (res.connectionState ==
                                             ConnectionState.done) {
                                           return Text(
-                                            res.data!.docs.length.toString() +
-                                                ' Applicants',
-                                            style: TextStyle(
+                                            '${res.data!.docs.length} Applicants',
+                                            style: const TextStyle(
                                                 fontSize: 10,
                                                 color: Colors.grey,
                                                 fontWeight: FontWeight.normal,
@@ -138,9 +134,9 @@ class _FindState extends State<Find> {
                                           );
                                         } else if (snapshot.connectionState ==
                                             ConnectionState.none) {
-                                          return Text("No data");
+                                          return const Text("No data");
                                         }
-                                        return CircularProgressIndicator();
+                                        return const CircularProgressIndicator();
                                       }),
                                     const SizedBox(height: 6),
                                     Row(
@@ -161,7 +157,7 @@ class _FindState extends State<Find> {
                                               ),
                                               child: Text(
                                                 doc.get('contract'),
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     color: Colors.white,
                                                     fontSize: 9,
                                                     fontWeight: FontWeight.bold,
@@ -224,7 +220,7 @@ class _FindState extends State<Find> {
                                                             BorderRadius
                                                                 .circular(20),
                                                       ),
-                                                      minimumSize: Size(60, 0),
+                                                      minimumSize: const Size(60, 0),
                                                     ),
                                                     onPressed: () {
                                                       if (res
@@ -237,13 +233,12 @@ class _FindState extends State<Find> {
                                                                       ApplyJob(job_id: doc.id),
                                                             ));
                                                       }
-                                                      ;
                                                     },
                                                     child: Text(
                                                       res.data!.docs.isEmpty
                                                           ? 'Apply'
                                                           : 'Applied',
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                           color: Colors.white,
                                                           fontFamily:
                                                               'GreycliffCF',
@@ -255,9 +250,9 @@ class _FindState extends State<Find> {
                                                 } else if (snapshot
                                                         .connectionState ==
                                                     ConnectionState.none) {
-                                                  return Text("No data");
+                                                  return const Text("No data");
                                                 }
-                                                return CircularProgressIndicator();
+                                                return const CircularProgressIndicator();
                                               }),
                                         )
                                       ],
@@ -287,9 +282,9 @@ class _FindState extends State<Find> {
                                                   } else if (snapshot
                                                           .connectionState ==
                                                       ConnectionState.none) {
-                                                    return Text("No data");
+                                                    return const Text("No data");
                                                   }
-                                                  return CircularProgressIndicator();
+                                                  return const CircularProgressIndicator();
                                                 }),
                                             color: lblue,
                                             iconSize: 20,
@@ -307,9 +302,9 @@ class _FindState extends State<Find> {
                 .toList(),
           );
         } else if (snapshot.connectionState == ConnectionState.none) {
-          return Text("No data");
+          return const Text("No data");
         }
-        return CircularProgressIndicator();
+        return const CircularProgressIndicator();
       },
     );
   }
@@ -332,7 +327,7 @@ class _FindState extends State<Find> {
               child: Column(
                 children: [
                   // PP-Nama-Notif
-                  Container(
+                  SizedBox(
                     //color: Colors.black.withOpacity(0.2),
                     height: 60,
                     width: MediaQuery.of(context).size.width,
@@ -342,7 +337,7 @@ class _FindState extends State<Find> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           textDirection: TextDirection.ltr,
                           children: [
-                            SizedBox(height: 90),
+                            const SizedBox(height: 90),
                             ProfilePicture(
                               name: userInfo?['username'] ?? '',
                               radius: 36,
@@ -419,7 +414,7 @@ class _FindState extends State<Find> {
                                             Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
-                                                  builder: (context) => Notif(),
+                                                  builder: (context) => const Notif(),
                                                 ));
                                           },
                                           child: Icon(

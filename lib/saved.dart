@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 
 import 'package:tubes/authentication/authen_service.dart';
@@ -8,10 +6,7 @@ import 'package:tubes/notification.dart';
 import 'package:tubes/rsc/colors.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tubes/rsc/log.dart';
 
 class Saved extends StatefulWidget {
   const Saved({super.key});
@@ -45,15 +40,6 @@ class _SavedState extends State<Saved> {
     return jobSaved.get();
   }
 
-  Future<QuerySnapshot> _getJobTotalApplicant(
-    String job_id,
-  ) async {
-    Query<Map<String, dynamic>> appliedJobs = FirebaseFirestore.instance
-        .collection("job_applications")
-        .where('job_vacation_id', isEqualTo: job_id);
-
-    return await appliedJobs.get();
-  }
 
   Future<DocumentSnapshot<Map<String, dynamic>>> getJobVacationData(
       String jobVacationId) async {
@@ -66,23 +52,23 @@ class _SavedState extends State<Saved> {
   }
 
   Future<QuerySnapshot> _isJobSaved(
-    String job_id,
+    String jobId,
   ) async {
     Query<Map<String, dynamic>> savedJobs = FirebaseFirestore.instance
         .collection("job_saved")
         .where('user_id', isEqualTo: user!.uid)
-        .where('job_vacation_id', isEqualTo: job_id);
+        .where('job_vacation_id', isEqualTo: jobId);
 
     return await savedJobs.get();
   }
 
   Future<void> _saveJob(
-    String job_id,
+    String jobId,
   ) async {
     CollectionReference savedJobs =
         FirebaseFirestore.instance.collection("job_saved");
-    QuerySnapshot res = await _isJobSaved(job_id);
-    DocumentSnapshot job = await getJobVacationData(job_id);
+    QuerySnapshot res = await _isJobSaved(jobId);
+    DocumentSnapshot job = await getJobVacationData(jobId);
 
     try {
       if (res.docs.isNotEmpty) {
@@ -92,7 +78,7 @@ class _SavedState extends State<Saved> {
       } else {
         await savedJobs.add({
           'user_id': user!.uid,
-          'job_vacation_id': job_id,
+          'job_vacation_id': jobId,
         });
         await AuthenService().pushNotification('Job successfully saved', 'Job "${job.get('position')} - ${job.get('company_name')}" has been saved');
         Fluttertoast.showToast(msg: "Job Saved");
@@ -179,7 +165,7 @@ class _SavedState extends State<Saved> {
                                                       child: Text(
                                                         res.data!
                                                             .get('contract'),
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                             color: Colors.white,
                                                             fontSize: 9,
                                                             fontWeight:
@@ -260,10 +246,10 @@ class _SavedState extends State<Saved> {
                                                                     .connectionState ==
                                                                 ConnectionState
                                                                     .none) {
-                                                              return Text(
+                                                              return const Text(
                                                                   "No data");
                                                             }
-                                                            return CircularProgressIndicator();
+                                                            return const CircularProgressIndicator();
                                                           }),
                                                       color: lblue,
                                                       iconSize: 20,
@@ -283,16 +269,16 @@ class _SavedState extends State<Saved> {
                             ));
                       } else if (snapshot.connectionState ==
                           ConnectionState.none) {
-                        return Text("No data");
+                        return const Text("No data");
                       }
-                      return CircularProgressIndicator();
+                      return const CircularProgressIndicator();
                     }))
                 .toList(),
           );
         } else if (snapshot.connectionState == ConnectionState.none) {
-          return Text("No data");
+          return const Text("No data");
         }
-        return CircularProgressIndicator();
+        return const CircularProgressIndicator();
       },
     );
   }
@@ -312,7 +298,7 @@ class _SavedState extends State<Saved> {
               child: Column(
                 children: [
                   // PP-Nama-Notif
-                  Container(
+                  SizedBox(
                     height: 60,
                     width: MediaQuery.of(context).size.width,
                     child: Stack(
@@ -322,7 +308,7 @@ class _SavedState extends State<Saved> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           textDirection: TextDirection.ltr,
                           children: [
-                            SizedBox(height: 90),
+                            const SizedBox(height: 90),
                             ProfilePicture(
                               name: userInfo?['username'] ?? '',
                               radius: 36,
@@ -398,7 +384,7 @@ class _SavedState extends State<Saved> {
                                             Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
-                                                  builder: (context) => Notif(),
+                                                  builder: (context) => const Notif(),
                                                 ));
                                           },
                                           child: Icon(

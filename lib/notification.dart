@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:tubes/authentication/authen_service.dart';
@@ -23,7 +22,7 @@ class _NotifState extends State<Notif> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: lblue,
-        title: Text(
+        title: const Text(
           'Notification',
           style: TextStyle(
               color: Colors.white,
@@ -58,7 +57,7 @@ class _NotifState extends State<Notif> {
                       title: Text(notification.title),
                       subtitle: Text(notification.msg),
                     ),
-                    Divider(height: 1, color: Colors.grey),
+                    const Divider(height: 1, color: Colors.grey),
                   ]);
                 },
               );
