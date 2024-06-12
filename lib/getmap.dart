@@ -87,6 +87,15 @@ class _GetMapState extends State<GetMap> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text('Job Location'),
+    ),
       body: SafeArea(
         child: GoogleMap(
           onMapCreated: _onMapCreated,
