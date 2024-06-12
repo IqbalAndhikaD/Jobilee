@@ -18,6 +18,7 @@ class Find extends StatefulWidget {
 class _FindState extends State<Find> {
   int myIndex = 0;
   List<Widget> widgetList = const [];
+  String searchVal = "";
 
   final user = AuthenService().currentUser;
   dynamic userInfo;
@@ -70,236 +71,248 @@ class _FindState extends State<Find> {
     return await savedJobs.get();
   }
 
-  Widget _jobVacanciesList() {
+  bool searchJob(QueryDocumentSnapshot<Object?> job, String? search) {
+    if (search != null) {
+      return job!.get('company_name').toLowerCase().contains(search) ||
+          job!.get('position').toLowerCase().contains(search) ||
+          job!.get('contract').toLowerCase().contains(search);
+    }
+
+    return false;
+  }
+
+  Widget _jobVacanciesList(String? search) {
     return FutureBuilder(
       future: getData(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           return ListView(
             children: snapshot.data!.docs
-                .map((doc) => Card(
-                    color: Colors.white,
-                    elevation: 0,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              color: Colors.grey[200],
-                            ),
-                            padding: const EdgeInsets.all(8),
-                            child: Image(
-                              image: NetworkImage(doc.get('company_img')),
-                              height: 35,
-                              width: 35,
-                            ),
-                          ),
-                          Flexible(
-                            child: ListTile(
-                                title: Text(
-                                  doc.get('position'),
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      color: base,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'GreycliffCF'),
+                .map((doc) => searchJob(doc, search) ||
+                        search == ''
+                    ? Card(
+                        color: Colors.white,
+                        elevation: 0,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.grey[200],
                                 ),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      doc.get('company_name'),
+                                padding: const EdgeInsets.all(8),
+                                child: Image(
+                                  image: NetworkImage(doc.get('company_img')),
+                                  height: 35,
+                                  width: 35,
+                                ),
+                              ),
+                              Flexible(
+                                child: ListTile(
+                                    title: Text(
+                                      doc.get('position'),
                                       style: TextStyle(
-                                          fontSize: 12,
+                                          fontSize: 14,
                                           color: base,
-                                          fontWeight: FontWeight.normal,
+                                          fontWeight: FontWeight.bold,
                                           fontFamily: 'GreycliffCF'),
                                     ),
-                                    FutureBuilder(
-                                      future: _getJobTotalApplicant(doc.id),
-                                      builder: (context,
-                                          AsyncSnapshot<QuerySnapshot> res) {
-                                        if (res.connectionState ==
-                                            ConnectionState.done) {
-                                          return Text(
-                                            '${res.data!.docs.length} Applicants',
-                                            style: const TextStyle(
-                                                fontSize: 10,
-                                                color: Colors.grey,
-                                                fontWeight: FontWeight.normal,
-                                                fontFamily: 'GreycliffCF'),
-                                          );
-                                        } else if (snapshot.connectionState ==
-                                            ConnectionState.none) {
-                                          return const Text("No data");
-                                        }
-                                        return const CircularProgressIndicator();
-                                      }),
-                                    const SizedBox(height: 6),
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
+                                    subtitle: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          doc.get('company_name'),
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: base,
+                                              fontWeight: FontWeight.normal,
+                                              fontFamily: 'GreycliffCF'),
+                                        ),
+                                        FutureBuilder(
+                                          future: _getJobTotalApplicant(doc.id),
+                                          builder: (context,
+                                              AsyncSnapshot<QuerySnapshot> res) {
+                                            if (res.connectionState ==
+                                                ConnectionState.done) {
+                                              return Text(
+                                                '${res.data!.docs.length} Applicants',
+                                                style: const TextStyle(
+                                                    fontSize: 10,
+                                                    color: Colors.grey,
+                                                    fontWeight: FontWeight.normal,
+                                                    fontFamily: 'GreycliffCF'),
+                                              );
+                                            } else if (snapshot.connectionState ==
+                                                ConnectionState.none) {
+                                              return const Text("No data");
+                                            }
+                                            return const CircularProgressIndicator();
+                                          }),
+                                        const SizedBox(height: 6),
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Column(
+                                              children: [
+                                                Container(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                          horizontal: 8,
+                                                          vertical: 4),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(4),
+                                                    color: dpurple,
+                                                  ),
+                                                  child: Text(
+                                                    doc.get('contract'),
+                                                    style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 9,
+                                                        fontWeight: FontWeight.bold,
+                                                        fontFamily: 'GreycliffCF'),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                  horizontal: 4),
+                                              child: Container(
+                                                padding: const EdgeInsets.symmetric(
+                                                    horizontal: 8, vertical: 4),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                  color: yellow,
+                                                ),
+                                                child: Text(
+                                                  doc.get('work_type'),
+                                                  style: TextStyle(
+                                                      color: base,
+                                                      fontSize: 9,
+                                                      fontWeight: FontWeight.bold,
+                                                      fontFamily: 'GreycliffCF'),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    trailing: Wrap(
+                                      crossAxisAlignment: WrapCrossAlignment.center,
+                                      alignment: WrapAlignment.spaceBetween,
+                                      direction: Axis.horizontal,
                                       children: [
                                         Column(
                                           children: [
-                                            Container(
+                                            Padding(
                                               padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 4),
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(4),
-                                                color: dpurple,
-                                              ),
-                                              child: Text(
-                                                doc.get('contract'),
-                                                style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 9,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontFamily: 'GreycliffCF'),
-                                              ),
+                                                  const EdgeInsets.only(right: 8),
+                                              child: FutureBuilder(
+                                                  future: _isJobApplied(doc.id),
+                                                  builder: (context,
+                                                      AsyncSnapshot<QuerySnapshot>
+                                                          res) {
+                                                    if (res.connectionState ==
+                                                        ConnectionState.done) {
+                                                      return TextButton(
+                                                        style: TextButton.styleFrom(
+                                                          backgroundColor:
+                                                              res.data!.docs.isEmpty
+                                                                  ? lblue
+                                                                  : Colors.grey,
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(20),
+                                                          ),
+                                                          minimumSize: const Size(60, 0),
+                                                        ),
+                                                        onPressed: () {
+                                                          if (res
+                                                              .data!.docs.isEmpty) {
+                                                            Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) =>
+                                                                          ApplyJob(job_id: doc.id),
+                                                                ));
+                                                          }
+                                                        },
+                                                        child: Text(
+                                                          res.data!.docs.isEmpty
+                                                              ? 'Apply'
+                                                              : 'Applied',
+                                                          style: const TextStyle(
+                                                              color: Colors.white,
+                                                              fontFamily:
+                                                                  'GreycliffCF',
+                                                              fontSize: 10,
+                                                              fontWeight:
+                                                                  FontWeight.w600),
+                                                        ),
+                                                      );
+                                                    } else if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState.none) {
+                                                      return const Text("No data");
+                                                    }
+                                                    return const CircularProgressIndicator();
+                                                  }),
                                             )
                                           ],
                                         ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 4),
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
-                                              color: yellow,
-                                            ),
-                                            child: Text(
-                                              doc.get('work_type'),
-                                              style: TextStyle(
-                                                  color: base,
-                                                  fontSize: 9,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontFamily: 'GreycliffCF'),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                trailing: Wrap(
-                                  crossAxisAlignment: WrapCrossAlignment.center,
-                                  alignment: WrapAlignment.spaceBetween,
-                                  direction: Axis.horizontal,
-                                  children: [
-                                    Column(
-                                      children: [
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(right: 8),
-                                          child: FutureBuilder(
-                                              future: _isJobApplied(doc.id),
-                                              builder: (context,
-                                                  AsyncSnapshot<QuerySnapshot>
-                                                      res) {
-                                                if (res.connectionState ==
-                                                    ConnectionState.done) {
-                                                  return TextButton(
-                                                    style: TextButton.styleFrom(
-                                                      backgroundColor:
-                                                          res.data!.docs.isEmpty
-                                                              ? lblue
-                                                              : Colors.grey,
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(20),
-                                                      ),
-                                                      minimumSize: const Size(60, 0),
-                                                    ),
-                                                    onPressed: () {
-                                                      if (res
-                                                          .data!.docs.isEmpty) {
-                                                        Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder:
-                                                                  (context) =>
-                                                                      ApplyJob(job_id: doc.id),
-                                                            ));
+                                        Column(
+                                          children: [
+                                            Ink(
+                                              width: 40,
+                                              height: 40,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: bblue,
+                                              ),
+                                              child: IconButton(
+                                                icon: FutureBuilder(
+                                                    future: _isJobSaved(doc.id),
+                                                    builder: (context,
+                                                        AsyncSnapshot<QuerySnapshot>
+                                                            res) {
+                                                      if (res.connectionState ==
+                                                          ConnectionState.done) {
+                                                        return Icon(res.data!.docs
+                                                                .isNotEmpty
+                                                            ? Icons.bookmark
+                                                            : Icons
+                                                                .bookmark_border_outlined);
+                                                      } else if (snapshot
+                                                              .connectionState ==
+                                                          ConnectionState.none) {
+                                                        return const Text("No data");
                                                       }
-                                                    },
-                                                    child: Text(
-                                                      res.data!.docs.isEmpty
-                                                          ? 'Apply'
-                                                          : 'Applied',
-                                                      style: const TextStyle(
-                                                          color: Colors.white,
-                                                          fontFamily:
-                                                              'GreycliffCF',
-                                                          fontSize: 10,
-                                                          fontWeight:
-                                                              FontWeight.w600),
-                                                    ),
-                                                  );
-                                                } else if (snapshot
-                                                        .connectionState ==
-                                                    ConnectionState.none) {
-                                                  return const Text("No data");
-                                                }
-                                                return const CircularProgressIndicator();
-                                              }),
-                                        )
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        Ink(
-                                          width: 40,
-                                          height: 40,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: bblue,
-                                          ),
-                                          child: IconButton(
-                                            icon: FutureBuilder(
-                                                future: _isJobSaved(doc.id),
-                                                builder: (context,
-                                                    AsyncSnapshot<QuerySnapshot>
-                                                        res) {
-                                                  if (res.connectionState ==
-                                                      ConnectionState.done) {
-                                                    return Icon(res.data!.docs
-                                                            .isNotEmpty
-                                                        ? Icons.bookmark
-                                                        : Icons
-                                                            .bookmark_border_outlined);
-                                                  } else if (snapshot
-                                                          .connectionState ==
-                                                      ConnectionState.none) {
-                                                    return const Text("No data");
-                                                  }
-                                                  return const CircularProgressIndicator();
-                                                }),
-                                            color: lblue,
-                                            iconSize: 20,
-                                            onPressed: () {},
-                                          ),
+                                                      return const CircularProgressIndicator();
+                                                    }),
+                                                color: lblue,
+                                                iconSize: 20,
+                                                onPressed: () {},
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
-                                    ),
-                                  ],
-                                )),
-                          )
-                        ],
-                      ),
-                    )))
-                .toList(),
+                                    )),
+                              )
+                            ],
+                          ),
+                        )) : Text(''))
+                    .toList(),
           );
         } else if (snapshot.connectionState == ConnectionState.none) {
           return const Text("No data");
@@ -317,12 +330,14 @@ class _FindState extends State<Find> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // appBar: AppBar(actions: [
+    final TextEditingController _search = TextEditingController();
+    final _formKey = GlobalKey<FormState>();
 
-      // ],),
+    return Scaffold(
       body: SafeArea(
-          child: Container(
+          child: Form(
+            key: _formKey,
+            child: Container(
               padding: const EdgeInsets.all(12),
               child: Column(
                 children: [
@@ -437,7 +452,8 @@ class _FindState extends State<Find> {
                         children: [
                           SizedBox(
                             height: 40,
-                            child: TextField(
+                            child: TextFormField(
+                              controller: _search,
                               style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey[800],
@@ -474,18 +490,21 @@ class _FindState extends State<Find> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(left: 8),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(999),
-                              color: lblue,
+                          child: TextButton(
+                            onPressed: () {
+                              setState(() {
+                                searchVal = _search.text;
+                              });
+                            },
+                            child: Icon(
+                              Icons.search,
+                              color: bblue,
                             ),
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 24, vertical: 8),
-                              child: Icon(
-                                Icons.search,
-                                color: Colors.white,
-                                size: 20,
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.all(9),
+                              backgroundColor: lblue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(999),
                               ),
                             ),
                           ),
@@ -509,12 +528,58 @@ class _FindState extends State<Find> {
                       ),
                     ],
                   ),
+
+                  Padding(
+                    padding:
+                        EdgeInsets.only(top: searchVal != '' ? 7 : 0),
+                    child: searchVal != ''
+                        ? Row(children: [
+                            Column(
+                              children: [
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(right: 4),
+                                  child: Text(
+                                    'Search Result:',
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: base,
+                                        fontWeight: FontWeight.w700,
+                                        fontFamily: 'GreycliffCF'),
+                                  ),
+                                )
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.circular(4),
+                                    color: bblue,
+                                  ),
+                                  child: Text(
+                                    searchVal,
+                                    style: TextStyle(
+                                        color: lblue,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'GreycliffCF'),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ])
+                        : null),
+
                   const SizedBox(height: 12),
 
                   // list
-                  Flexible(child: _jobVacanciesList())
+                  Flexible(child: _jobVacanciesList(searchVal))
                 ],
-              ))),
+              )))),
     );
   }
 

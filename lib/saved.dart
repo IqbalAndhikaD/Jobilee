@@ -18,6 +18,7 @@ class Saved extends StatefulWidget {
 class _SavedState extends State<Saved> {
   int myIndex = 0;
   List<Widget> widgetList = const [];
+  String searchVal = "";
 
   final user = AuthenService().currentUser;
   dynamic userInfo;
@@ -89,7 +90,17 @@ class _SavedState extends State<Saved> {
     }
   }
 
-  Widget _savedJobsList() {
+  bool searchJob(AsyncSnapshot<DocumentSnapshot<Object?>> job, String? search) {
+    if (search != null) {
+      return job.data!.get('company_name').toLowerCase().contains(search) ||
+          job.data!.get('position').toLowerCase().contains(search) ||
+          job.data!.get('contract').toLowerCase().contains(search);
+    }
+
+    return false;
+  }
+
+  Widget _savedJobsList(String? search) {
     return FutureBuilder(
       future: getData(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -100,7 +111,8 @@ class _SavedState extends State<Saved> {
                     future: getJobVacationData(doc.get('job_vacation_id')),
                     builder: (context, AsyncSnapshot<DocumentSnapshot> res) {
                       if (res.connectionState == ConnectionState.done) {
-                        return Card(
+                        if (searchJob(res, search) || search == '') {
+                          return Card(
                             color: Colors.white,
                             elevation: 0,
                             child: Padding(
@@ -267,6 +279,9 @@ class _SavedState extends State<Saved> {
                                 ],
                               ),
                             ));
+                        }
+
+                        return Container();
                       } else if (snapshot.connectionState ==
                           ConnectionState.none) {
                         return const Text("No data");
@@ -291,9 +306,14 @@ class _SavedState extends State<Saved> {
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController _search = TextEditingController();
+    final _formKey = GlobalKey<FormState>();
+
     return Scaffold(
       body: SafeArea(
-          child: Container(
+          child: Form(
+            key: _formKey,
+            child: Container(
               padding: const EdgeInsets.all(12),
               child: Column(
                 children: [
@@ -407,7 +427,8 @@ class _SavedState extends State<Saved> {
                         children: [
                           SizedBox(
                             height: 40,
-                            child: TextField(
+                            child: TextFormField(
+                              controller: _search,
                               style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey[800],
@@ -444,18 +465,21 @@ class _SavedState extends State<Saved> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(left: 8),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(999),
-                              color: lblue,
+                          child: TextButton(
+                            onPressed: () {
+                              setState(() {
+                                searchVal = _search.text;
+                              });
+                            },
+                            child: Icon(
+                              Icons.search,
+                              color: bblue,
                             ),
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 24, vertical: 8),
-                              child: Icon(
-                                Icons.search,
-                                color: Colors.white,
-                                size: 20,
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.all(9),
+                              backgroundColor: lblue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(999),
                               ),
                             ),
                           ),
@@ -479,12 +503,58 @@ class _SavedState extends State<Saved> {
                       ),
                     ],
                   ),
+
+                  Padding(
+                    padding:
+                        EdgeInsets.only(top: searchVal != '' ? 7 : 0),
+                    child: searchVal != ''
+                        ? Row(children: [
+                            Column(
+                              children: [
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(right: 4),
+                                  child: Text(
+                                    'Search Result:',
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: base,
+                                        fontWeight: FontWeight.w700,
+                                        fontFamily: 'GreycliffCF'),
+                                  ),
+                                )
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.circular(4),
+                                    color: bblue,
+                                  ),
+                                  child: Text(
+                                    searchVal,
+                                    style: TextStyle(
+                                        color: lblue,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'GreycliffCF'),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ])
+                        : null),
+
                   const SizedBox(height: 12),
 
                   // list
-                  Flexible(child: _savedJobsList())
+                  Flexible(child: _savedJobsList(searchVal))
                 ],
-              ))),
+              )))),
     );
   }
 }

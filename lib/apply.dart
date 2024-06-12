@@ -18,6 +18,7 @@ class Apply extends StatefulWidget {
 class _ApplyState extends State<Apply> {
   int myIndex = 0;
   List<Widget> widgetList = const [];
+  String searchVal = "";
 
   final user = AuthenService().currentUser;
   dynamic userInfo;
@@ -76,7 +77,17 @@ class _ApplyState extends State<Apply> {
     }
   }
 
-  Widget _jobApplicationsList() {
+  bool searchJob(AsyncSnapshot<DocumentSnapshot<Object?>> job, String? search) {
+    if (search != null) {
+      return job.data!.get('company_name').toLowerCase().contains(search) ||
+          job.data!.get('position').toLowerCase().contains(search) ||
+          job.data!.get('contract').toLowerCase().contains(search);
+    }
+
+    return false;
+  }
+
+  Widget _jobApplicationsList(String? search) {
     return FutureBuilder(
       future: getData(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -87,128 +98,132 @@ class _ApplyState extends State<Apply> {
                     future: getJobVacationData(doc.get('job_vacation_id')),
                     builder: (context, AsyncSnapshot<DocumentSnapshot> res) {
                       if (res.connectionState == ConnectionState.done) {
-                        return Card(
-                            color: Colors.white,
-                            elevation: 0,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 12),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      color: Colors.grey[200],
-                                    ),
-                                    padding: const EdgeInsets.all(8),
-                                    child: Image(
-                                      image: NetworkImage(
-                                        res.data!.get('company_img'),
+                        if (searchJob(res, search) || search == '') {
+                          return Card(
+                              color: Colors.white,
+                              elevation: 0,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 12),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        color: Colors.grey[200],
                                       ),
-                                      height: 35,
-                                      width: 35,
-                                    ),
-                                  ),
-                                  Flexible(
-                                    child: ListTile(
-                                        title: Text(
-                                          res.data!.get('position'),
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: base,
-                                              fontWeight: FontWeight.bold,
-                                              fontFamily: 'GreycliffCF'),
+                                      padding: const EdgeInsets.all(8),
+                                      child: Image(
+                                        image: NetworkImage(
+                                          res.data!.get('company_img'),
                                         ),
-                                        subtitle: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              res.data!.get('company_name'),
-                                              style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: base,
-                                                  fontWeight: FontWeight.normal,
-                                                  fontFamily: 'GreycliffCF'),
-                                            ),
-                                            const SizedBox(height: 6),
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 4),
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(4),
-                                                color: _getStatusBGColor(
-                                                    doc.get('status')),
-                                              ),
-                                              child: Text(
-                                                doc.get('status'),
+                                        height: 35,
+                                        width: 35,
+                                      ),
+                                    ),
+                                    Flexible(
+                                      child: ListTile(
+                                          title: Text(
+                                            res.data!.get('position'),
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: base,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'GreycliffCF'),
+                                          ),
+                                          subtitle: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                res.data!.get('company_name'),
                                                 style: TextStyle(
-                                                    color: _getStatusTextColor(
-                                                        doc.get('status')),
-                                                    fontSize: 9,
-                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 12,
+                                                    color: base,
+                                                    fontWeight: FontWeight.normal,
                                                     fontFamily: 'GreycliffCF'),
                                               ),
-                                            )
-                                          ],
-                                        ),
-                                        trailing: Wrap(
-                                          crossAxisAlignment:
-                                              WrapCrossAlignment.center,
-                                          alignment: WrapAlignment.spaceBetween,
-                                          direction: Axis.horizontal,
-                                          children: [
-                                            Column(
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          right: 8),
-                                                  child: TextButton(
-                                                    style: TextButton.styleFrom(
-                                                      backgroundColor: lblue,
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(20),
+                                              const SizedBox(height: 6),
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8,
+                                                        vertical: 4),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                  color: _getStatusBGColor(
+                                                      doc.get('status')),
+                                                ),
+                                                child: Text(
+                                                  doc.get('status'),
+                                                  style: TextStyle(
+                                                      color: _getStatusTextColor(
+                                                          doc.get('status')),
+                                                      fontSize: 9,
+                                                      fontWeight: FontWeight.bold,
+                                                      fontFamily: 'GreycliffCF'),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          trailing: Wrap(
+                                            crossAxisAlignment:
+                                                WrapCrossAlignment.center,
+                                            alignment: WrapAlignment.spaceBetween,
+                                            direction: Axis.horizontal,
+                                            children: [
+                                              Column(
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            right: 8),
+                                                    child: TextButton(
+                                                      style: TextButton.styleFrom(
+                                                        backgroundColor: lblue,
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(20),
+                                                        ),
+                                                        minimumSize: const Size(60, 0),
                                                       ),
-                                                      minimumSize: const Size(60, 0),
+                                                      onPressed: () {
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder:
+                                                                  (context) =>
+                                                                      ApplyJob(job_id: doc.get(
+                                                                          'job_vacation_id')),
+                                                            ));
+                                                      },
+                                                      child: const Text(
+                                                        'See Details',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontFamily:
+                                                                'GreycliffCF',
+                                                            fontSize: 10,
+                                                            fontWeight:
+                                                                FontWeight.w600),
+                                                      ),
                                                     ),
-                                                    onPressed: () {
-                                                      Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder:
-                                                                (context) =>
-                                                                    ApplyJob(job_id: doc.get(
-                                                                        'job_vacation_id')),
-                                                          ));
-                                                    },
-                                                    child: const Text(
-                                                      'See Details',
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontFamily:
-                                                              'GreycliffCF',
-                                                          fontSize: 10,
-                                                          fontWeight:
-                                                              FontWeight.w600),
-                                                    ),
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                          ],
-                                        )),
-                                  )
-                                ],
-                              ),
-                            ));
+                                                  )
+                                                ],
+                                              ),
+                                            ],
+                                          )),
+                                    )
+                                  ],
+                                ),
+                              ));
+                        }
+
+                        return Container();
                       } else if (snapshot.connectionState ==
                           ConnectionState.none) {
                         return const Text("No data");
@@ -233,6 +248,9 @@ class _ApplyState extends State<Apply> {
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController _search = TextEditingController();
+    final _formKey = GlobalKey<FormState>();
+
     return Scaffold(
       body: SafeArea(
           child: Container(
@@ -349,7 +367,8 @@ class _ApplyState extends State<Apply> {
                         children: [
                           SizedBox(
                             height: 40,
-                            child: TextField(
+                            child: TextFormField(
+                              controller: _search,
                               style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey[800],
@@ -386,18 +405,21 @@ class _ApplyState extends State<Apply> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(left: 8),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(999),
-                              color: lblue,
+                          child: TextButton(
+                            onPressed: () {
+                              setState(() {
+                                searchVal = _search.text;
+                              });
+                            },
+                            child: Icon(
+                              Icons.search,
+                              color: bblue,
                             ),
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 24, vertical: 8),
-                              child: Icon(
-                                Icons.search,
-                                color: Colors.white,
-                                size: 20,
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.all(9),
+                              backgroundColor: lblue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(999),
                               ),
                             ),
                           ),
@@ -421,10 +443,53 @@ class _ApplyState extends State<Apply> {
                       ),
                     ],
                   ),
+
+                  Padding(
+                    padding: EdgeInsets.only(top: searchVal != '' ? 7 : 0),
+                    child: searchVal != ''
+                        ? Row(children: [
+                            Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 4),
+                                  child: Text(
+                                    'Search Result:',
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: base,
+                                        fontWeight: FontWeight.w700,
+                                        fontFamily: 'GreycliffCF'),
+                                  ),
+                                )
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4),
+                                    color: bblue,
+                                  ),
+                                  child: Text(
+                                    searchVal,
+                                    style: TextStyle(
+                                        color: lblue,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'GreycliffCF'),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ])
+                        : null),
+
                   const SizedBox(height: 12),
 
                   // list
-                  Flexible(child: _jobApplicationsList())
+                  Flexible(child: _jobApplicationsList(searchVal))
                 ],
               ))),
     );
