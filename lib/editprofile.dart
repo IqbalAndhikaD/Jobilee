@@ -1,6 +1,8 @@
 
 // ignore_for_file: camel_case_types, use_build_context_synchronously
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:image_picker/image_picker.dart';
@@ -12,6 +14,7 @@ import 'package:tubes/rsc/colors.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class editProfile extends StatefulWidget {
   final String currentProfilePic;
@@ -28,6 +31,7 @@ class editProfile extends StatefulWidget {
 
 class _editProfileState extends State<editProfile> {
   bool _isSecurePassword = false;
+  File? _image;
 
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();
@@ -68,6 +72,35 @@ class _editProfileState extends State<editProfile> {
     }
   }
 
+  Future<void> uploadProfilePicture() async {
+    if (_image != null) {
+      var imageName = DateTime.now().millisecondsSinceEpoch.toString();
+      var storageRef = FirebaseStorage.instance.ref().child('profile_pic/${user!.uid}/$imageName.jpg'); 
+      var uploadTask = storageRef.putFile(_image!); 
+      var downloadUrl = await (await uploadTask).ref.getDownloadURL(); 
+
+      try {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user!.uid)
+            .update({
+              'profile_pic': downloadUrl,
+            });
+        Fluttertoast.showToast(msg: "Profile picture updated");
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const NavBar(index: 4),
+            ));
+      } catch (e) {
+        final errorMsg = e.toString();
+        Fluttertoast.showToast(msg: errorMsg);
+      }
+    } else {
+      Fluttertoast.showToast(msg: "No image selected");
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -81,7 +114,10 @@ class _editProfileState extends State<editProfile> {
     final pickedFile = await _picker.pickImage(source: source);
     if (pickedFile != null) {
       setState(() {
+        _image = File(pickedFile.path);
       });
+
+      uploadProfilePicture();
     }
   }
 
@@ -161,8 +197,7 @@ class _editProfileState extends State<editProfile> {
                                                   ),
                                                   onTap: () {
                                                     Navigator.pop(context);
-                                                    _getImage(
-                                                        ImageSource.camera);
+                                                    _getImage(ImageSource.camera);
                                                   },
                                                 ),
                                                 ListTile(
@@ -178,8 +213,7 @@ class _editProfileState extends State<editProfile> {
                                                   ),
                                                   onTap: () {
                                                     Navigator.pop(context);
-                                                    _getImage(
-                                                        ImageSource.gallery);
+                                                    _getImage(ImageSource.gallery);
                                                   },
                                                 ),
                                               ],
