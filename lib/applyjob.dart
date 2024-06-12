@@ -43,7 +43,8 @@ class _ApplyJobState extends State<ApplyJob> {
   }
 
   Future<void> getData() async {
-    DocumentReference<Map<String, dynamic>> jobVacation = FirebaseFirestore.instance
+    DocumentReference<Map<String, dynamic>> jobVacation = FirebaseFirestore
+        .instance
         .collection("job_vacations")
         .doc(widget.job_id);
 
@@ -53,7 +54,7 @@ class _ApplyJobState extends State<ApplyJob> {
     setState(() {
       job = result;
     });
-    }
+  }
 
   Future<QuerySnapshot> _isJobApplied(
     String job_id,
@@ -83,7 +84,7 @@ class _ApplyJobState extends State<ApplyJob> {
     CollectionReference<Map<String, dynamic>> jobApplications =
         FirebaseFirestore.instance.collection("job_applications");
     DocumentSnapshot job = await getJobVacationData(job_id);
-    
+
     try {
       await jobApplications.add({
         'user_id': user!.uid,
@@ -110,6 +111,11 @@ class _ApplyJobState extends State<ApplyJob> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    double screenWidth = width;
+    double stackHeight = height;
+
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -120,6 +126,394 @@ class _ApplyJobState extends State<ApplyJob> {
             Padding(
               padding: const EdgeInsets.only(top: 200.0),
               child: Container(
+                child: SizedBox(
+                  width: screenWidth,
+                  height: stackHeight,
+                  child: Wrap(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 65.0),
+                        child: Wrap(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    job != null
+                                        ? job.data()['company_name']
+                                        : '',
+                                    style: const TextStyle(
+                                        fontSize: 19,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w500,
+                                        fontFamily: 'GreycliffCF'),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  Text(
+                                    job != null ? job.data()['position'] : '',
+                                    style: const TextStyle(
+                                        fontSize: 19,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: 'GreycliffCF'),
+                                  ),
+                                  SizedBox(
+                                    height: 8,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                              color: dpurple,
+                                            ),
+                                            child: Text(
+                                              job != null
+                                                  ? job.data()['contract']
+                                                  : '',
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'GreycliffCF'),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                            color: yellow,
+                                          ),
+                                          child: Text(
+                                            job != null
+                                                ? job.data()['work_type']
+                                                : '',
+                                            style: TextStyle(
+                                                color: base,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'GreycliffCF'),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 16,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      //Applicants
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4),
+                                        child: Container(
+                                          padding: const EdgeInsets.all(4),
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.grey
+                                                      .withOpacity(0.4)),
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(6),
+                                                  color: ppblue,
+                                                  child: Icon(
+                                                    Icons.people_alt_rounded,
+                                                    color: lblue,
+                                                  ),
+                                                ),
+                                              ),
+                                              Column(
+                                                children: [
+                                                  FutureBuilder(
+                                                      future:
+                                                          _getJobTotalApplicant(
+                                                              widget.job_id),
+                                                      builder: (context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                        if (snapshot
+                                                                .connectionState ==
+                                                            ConnectionState
+                                                                .done) {
+                                                          return Text(
+                                                            snapshot.data!.docs
+                                                                .length
+                                                                .toString(),
+                                                            style: const TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontFamily:
+                                                                    'GreycliffCF',
+                                                                fontSize: 16,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600),
+                                                          );
+                                                        } else if (snapshot
+                                                                .connectionState ==
+                                                            ConnectionState
+                                                                .none) {
+                                                          return const Text(
+                                                              "No data");
+                                                        }
+                                                        return const CircularProgressIndicator();
+                                                      }),
+                                                  const Text(
+                                                    '  Applicants  ',
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontFamily:
+                                                            'GreycliffCF',
+                                                        fontSize: 11,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  )
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+
+                                      //Salary
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4),
+                                        child: Container(
+                                          padding: const EdgeInsets.all(4),
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.grey
+                                                      .withOpacity(0.4)),
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(6),
+                                                  color: pgreen,
+                                                  child: Icon(
+                                                    Icons.attach_money_rounded,
+                                                    color: lgreen,
+                                                  ),
+                                                ),
+                                              ),
+                                              Column(
+                                                children: [
+                                                  Text(
+                                                    '\$${job != null ? job.data()['salary'] : ''}',
+                                                    style: const TextStyle(
+                                                        color: Colors.black,
+                                                        fontFamily:
+                                                            'GreycliffCF',
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                                  ),
+                                                  const Text(
+                                                    '  per year  ',
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontFamily:
+                                                            'GreycliffCF',
+                                                        fontSize: 11,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  )
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+
+                                      //Position
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4),
+                                        child: Container(
+                                          padding: const EdgeInsets.all(4),
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.grey
+                                                      .withOpacity(0.4)),
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(6),
+                                                  color: pred,
+                                                  child: Icon(
+                                                    Icons.work_outline_rounded,
+                                                    color: lred,
+                                                  ),
+                                                ),
+                                              ),
+                                              Column(
+                                                children: [
+                                                  Text(
+                                                    ' ${job != null ? job.data()['level'] : ''} ',
+                                                    style: const TextStyle(
+                                                        color: Colors.black,
+                                                        fontFamily:
+                                                            'GreycliffCF',
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                                  ),
+                                                  const Text(
+                                                    '  Position  ',
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontFamily:
+                                                            'GreycliffCF',
+                                                        fontSize: 11,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  )
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            FutureBuilder(
+                              future: _isJobApplied(widget.job_id),
+                              builder: (context, AsyncSnapshot<QuerySnapshot> res) {
+                                if (res.connectionState == ConnectionState.done) {
+                                  return SizedBox(
+                                    height: res.data!.docs.isEmpty ? height * 0.35 : height * 0.40,
+                                    child: SingleChildScrollView(
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 16, left: 44, right: 44),
+                                        child: Wrap(
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(top: 0),
+                                              child: Wrap(
+                                                children: [
+                                                  Text(
+                                                    'Job Description',
+                                                    textAlign: TextAlign.start,
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.black,
+                                                        fontWeight: FontWeight.w600,
+                                                        fontFamily: 'GreycliffCF'),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 320,
+                                                    child: Text(
+                                                      job != null
+                                                          ? job.data()['description']
+                                                          : '',
+                                                      style: TextStyle(
+                                                          fontSize: 12,
+                                                          color: base,
+                                                          fontWeight: FontWeight.w400,
+                                                          fontFamily: 'GreycliffCF'),
+                                                      textAlign: TextAlign.justify,
+                                                    ),
+                                                  ),
+                                                ]
+                                              ),
+                                            ),
+                                            
+                                            Padding(
+                                              padding: const EdgeInsets.only(top: 16),
+                                              child: Wrap(children: [
+                                                Text(
+                                                  'Job Responsibilities',
+                                                  textAlign: TextAlign.start,
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      color: Colors.black,
+                                                      fontWeight: FontWeight.w600,
+                                                      fontFamily: 'GreycliffCF'),
+                                                ),
+                                                SizedBox(
+                                                  width: 320,
+                                                  child: Text(
+                                                    job != null
+                                                        ? job.data()['responsibilities']
+                                                        : '',
+                                                    style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: base,
+                                                        fontWeight: FontWeight.w400,
+                                                        fontFamily: 'GreycliffCF'),
+                                                    textAlign: TextAlign.justify,
+                                                  ),
+                                                ),
+                                              ]),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                } else if (res.connectionState ==
+                                    ConnectionState.none) {
+                                  return const Text("No data");
+                                }
+                                return const CircularProgressIndicator();
+                              }
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 decoration: const BoxDecoration(
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(26),
@@ -134,335 +528,12 @@ class _ApplyJobState extends State<ApplyJob> {
                 clipBehavior: Clip.none,
                 alignment: Alignment.center,
                 children: [
-                  Positioned(top: 140, child: buildProfileImage(
-                    job != null ? job.data()['company_img'] : '',
-                  )),
+                  Positioned(
+                      top: 140,
+                      child: buildProfileImage(
+                        job != null ? job.data()['company_img'] : '',
+                      )),
                 ]),
-
-            // Info Perusahaan
-            Stack(
-              clipBehavior: Clip.none,
-              alignment: Alignment.center,
-              children: [
-                Positioned(
-                  top: 260,
-                  child: Text(
-                    job != null ? job.data()['company_name'] : '',
-                    style: const TextStyle(
-                        fontSize: 19,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w500,
-                        fontFamily: 'GreycliffCF'),
-                  ),
-                ),
-
-                Positioned(
-                  top: 290,
-                  child: Text(
-                    job != null ? job.data()['position'] : '',
-                    style: const TextStyle(
-                        fontSize: 19,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: 'GreycliffCF'),
-                  ),
-                ),
-
-                // contract & full-time
-                Positioned(
-                  top: 325,
-                  child: Row(
-                    children: [
-                      Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              color: dpurple,
-                            ),
-                            child: Text(
-                              job != null ? job.data()['contract'] : '',
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'GreycliffCF'),
-                            ),
-                          )
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            color: yellow,
-                          ),
-                          child: Text(
-                            job != null ? job.data()['work_type'] : '',
-                            style: TextStyle(
-                                color: base,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'GreycliffCF'),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Applicants, Salary, Posisiton
-                Positioned(
-                  top: 370,
-                  child: Row(
-                    children: [
-                      //Applicants
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: Colors.grey.withOpacity(0.4)),
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: Container(
-                                  padding: const EdgeInsets.all(6),
-                                  color: ppblue,
-                                  child: Icon(
-                                    Icons.people_alt_rounded,
-                                    color: lblue,
-                                  ),
-                                ),
-                              ),
-                              Column(
-                                children: [
-                                  FutureBuilder(
-                                    future: _getJobTotalApplicant(widget.job_id),
-                                    builder: (context,
-                                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.done) {
-                                        return Text(
-                                          snapshot.data!.docs.length.toString(),
-                                          style: const TextStyle(
-                                              color: Colors.black,
-                                              fontFamily: 'GreycliffCF',
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600),
-                                        );
-                                      } else if (snapshot.connectionState ==
-                                          ConnectionState.none) {
-                                        return const Text("No data");
-                                      }
-                                      return const CircularProgressIndicator();
-                                    }),
-                                  const Text(
-                                    '  Applicants  ',
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontFamily: 'GreycliffCF',
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w400),
-                                  )
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      //Salary
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: Colors.grey.withOpacity(0.4)),
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: Container(
-                                  padding: const EdgeInsets.all(6),
-                                  color: pgreen,
-                                  child: Icon(
-                                    Icons.attach_money_rounded,
-                                    color: lgreen,
-                                  ),
-                                ),
-                              ),
-                              Column(
-                                children: [
-                                  Text(
-                                    '\$${job != null ? job.data()['salary'] : ''}',
-                                    style: const TextStyle(
-                                        color: Colors.black,
-                                        fontFamily: 'GreycliffCF',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                  const Text(
-                                    '  per year  ',
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontFamily: 'GreycliffCF',
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w400),
-                                  )
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      //Position
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: Colors.grey.withOpacity(0.4)),
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: Container(
-                                  padding: const EdgeInsets.all(6),
-                                  color: pred,
-                                  child: Icon(
-                                    Icons.work_outline_rounded,
-                                    color: lred,
-                                  ),
-                                ),
-                              ),
-                              Column(
-                                children: [
-                                  Text(
-                                    ' ${job != null ? job.data()['level'] : ''} ',
-                                    style: const TextStyle(
-                                        color: Colors.black,
-                                        fontFamily: 'GreycliffCF',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                  const Text(
-                                    '  Position  ',
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontFamily: 'GreycliffCF',
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w400),
-                                  )
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-
-            const Positioned(
-                top: 440,
-                left: 45,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Job Description',
-                      style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'GreycliffCF'),
-                    ),
-                  ],
-                )),
-
-            Positioned(
-                top: 465,
-                left: 45,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  //mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      width: 320,
-                      child: Text(
-                        job != null ? job.data()['description'] : '',
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: base,
-                            fontWeight: FontWeight.w400,
-                            fontFamily: 'GreycliffCF'),
-                            textAlign: TextAlign.justify,
-                      ),
-                    )
-                  ],
-                )),
-
-            const Positioned(
-                top: 590,
-                left: 45,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Job Responsibilities',
-                      style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'GreycliffCF'),
-                    ),
-                  ],
-                )),
-
-            Positioned(
-                top: 620,
-                left: 45,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  //mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      width: 320,
-                      child: Text(
-                        job != null ? job.data()['responsibilities'] : '',
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: base,
-                            fontWeight: FontWeight.w400,
-                            fontFamily: 'GreycliffCF'),
-                            textAlign: TextAlign.justify,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                  ],
-                )),
 
             Stack(
               clipBehavior: Clip.none,
@@ -491,7 +562,9 @@ class _ApplyJobState extends State<ApplyJob> {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => const NavBar(index: 0,),
+                                            builder: (context) => const NavBar(
+                                              index: 0,
+                                            ),
                                           ));
                                     },
                                     child: Icon(
@@ -517,27 +590,32 @@ class _ApplyJobState extends State<ApplyJob> {
                         future: _isJobApplied(widget.job_id),
                         builder: (context, AsyncSnapshot<QuerySnapshot> res) {
                           if (res.connectionState == ConnectionState.done) {
-                            return res.data!.docs.isEmpty ? TextButton(
-                              style: TextButton.styleFrom(
-                                padding: const EdgeInsets.all(10),
-                                fixedSize: const Size(340, 0),
-                                backgroundColor: res.data!.docs.isEmpty ? lblue : Colors.grey,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              onPressed: () => {
-                                if (res.data!.docs.isEmpty) {
-                                  _applyJob(widget.job_id, context),
-                                }
-                              },
-                              child: const Text(
-                                'Apply Job',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontFamily: 'GreycliffCF',
-                                    fontWeight: FontWeight.w600),
-                              )) : const Text('');
+                            return res.data!.docs.isEmpty
+                                ? TextButton(
+                                    style: TextButton.styleFrom(
+                                      padding: const EdgeInsets.all(10),
+                                      fixedSize: const Size(340, 0),
+                                      backgroundColor: res.data!.docs.isEmpty
+                                          ? lblue
+                                          : Colors.grey,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    onPressed: () => {
+                                          if (res.data!.docs.isEmpty)
+                                            {
+                                              _applyJob(widget.job_id, context),
+                                            }
+                                        },
+                                    child: const Text(
+                                      'Apply Job',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontFamily: 'GreycliffCF',
+                                          fontWeight: FontWeight.w600),
+                                    ))
+                                : const Text('');
                           } else if (res.connectionState ==
                               ConnectionState.none) {
                             return const Text("No data");
@@ -604,7 +682,9 @@ class _ApplyJobState extends State<ApplyJob> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const NavBar(index: 1,),
+                        builder: (context) => const NavBar(
+                          index: 1,
+                        ),
                       ));
                 },
                 child: const Text(
@@ -620,5 +700,4 @@ class _ApplyJobState extends State<ApplyJob> {
       },
     );
   }
-
 }
