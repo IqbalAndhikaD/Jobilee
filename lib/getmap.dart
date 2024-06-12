@@ -26,6 +26,8 @@ class _GetMapState extends State<GetMap> {
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   dynamic userInfo;
   dynamic job;
+  String companyNameVal = '';
+  String addressVal = '';
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -62,6 +64,9 @@ class _GetMapState extends State<GetMap> {
     );
 
     setState(() {
+      companyNameVal = result.data()!['company_name'];
+      addressVal = result.data()!['address'];
+
       if (result.data()!['location'] != null) {
         job = result;
         markers[MarkerId(result.data()!['company_name'])] = marker;
@@ -88,14 +93,31 @@ class _GetMapState extends State<GetMap> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back),
-        onPressed: () {
-          Navigator.pop(context);
-        },
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("$companyNameVal Location"),
+              Container(
+                margin: const EdgeInsets.only(top: 2),
+                child: Text(
+                  addressVal,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
+                )
+              ),
+            ]
+          )
+        ),
       ),
-      title: Text('Job Location'),
-    ),
       body: SafeArea(
         child: GoogleMap(
           onMapCreated: _onMapCreated,
