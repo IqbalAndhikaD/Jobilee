@@ -3,11 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
-import 'package:tubes/editprofile.dart';
-import 'package:tubes/login.dart';
+import 'package:jobilee/editprofile.dart';
+import 'package:jobilee/login.dart';
 
-import 'package:tubes/authentication/authen_service.dart';
-import 'package:tubes/rsc/colors.dart';
+import 'package:jobilee/authentication/authen_service.dart';
+import 'package:jobilee/rsc/colors.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -123,10 +123,13 @@ class _ProfileState extends State<Profile> {
                       ),
                       onPressed: () {
                         Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => editProfile(currentProfilePic: '', onProfilePicUpdated: (String value) {  },),
-                          ));
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => editProfile(
+                                currentProfilePic: '',
+                                onProfilePicUpdated: (String value) {},
+                              ),
+                            ));
                       },
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -182,7 +185,8 @@ class _ProfileState extends State<Profile> {
       ),
     );
   }
-    Widget togglePassword() {
+
+  Widget togglePassword() {
     return IconButton(
       onPressed: () {
         setState(() {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:tubes/applyjob.dart';
+import 'package:jobilee/applyjob.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 
-import 'package:tubes/authentication/authen_service.dart';
-import 'package:tubes/notification.dart';
-import 'package:tubes/rsc/colors.dart';
+import 'package:jobilee/authentication/authen_service.dart';
+import 'package:jobilee/notification.dart';
+import 'package:jobilee/rsc/colors.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -141,7 +141,8 @@ class _ApplyState extends State<Apply> {
                                                 style: TextStyle(
                                                     fontSize: 12,
                                                     color: base,
-                                                    fontWeight: FontWeight.normal,
+                                                    fontWeight:
+                                                        FontWeight.normal,
                                                     fontFamily: 'GreycliffCF'),
                                               ),
                                               const SizedBox(height: 6),
@@ -159,11 +160,15 @@ class _ApplyState extends State<Apply> {
                                                 child: Text(
                                                   doc.get('status'),
                                                   style: TextStyle(
-                                                      color: _getStatusTextColor(
-                                                          doc.get('status')),
+                                                      color:
+                                                          _getStatusTextColor(
+                                                              doc.get(
+                                                                  'status')),
                                                       fontSize: 9,
-                                                      fontWeight: FontWeight.bold,
-                                                      fontFamily: 'GreycliffCF'),
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontFamily:
+                                                          'GreycliffCF'),
                                                 ),
                                               )
                                             ],
@@ -171,7 +176,8 @@ class _ApplyState extends State<Apply> {
                                           trailing: Wrap(
                                             crossAxisAlignment:
                                                 WrapCrossAlignment.center,
-                                            alignment: WrapAlignment.spaceBetween,
+                                            alignment:
+                                                WrapAlignment.spaceBetween,
                                             direction: Axis.horizontal,
                                             children: [
                                               Column(
@@ -181,7 +187,8 @@ class _ApplyState extends State<Apply> {
                                                         const EdgeInsets.only(
                                                             right: 8),
                                                     child: TextButton(
-                                                      style: TextButton.styleFrom(
+                                                      style:
+                                                          TextButton.styleFrom(
                                                         backgroundColor: lblue,
                                                         shape:
                                                             RoundedRectangleBorder(
@@ -189,16 +196,18 @@ class _ApplyState extends State<Apply> {
                                                               BorderRadius
                                                                   .circular(20),
                                                         ),
-                                                        minimumSize: const Size(60, 0),
+                                                        minimumSize:
+                                                            const Size(60, 0),
                                                       ),
                                                       onPressed: () {
                                                         Navigator.push(
                                                             context,
                                                             MaterialPageRoute(
-                                                              builder:
-                                                                  (context) =>
-                                                                      ApplyJob(job_id: doc.get(
-                                                                          'job_vacation_id')),
+                                                              builder: (context) =>
+                                                                  ApplyJob(
+                                                                      job_id: doc
+                                                                          .get(
+                                                                              'job_vacation_id')),
                                                             ));
                                                       },
                                                       child: const Text(
@@ -209,7 +218,8 @@ class _ApplyState extends State<Apply> {
                                                                 'GreycliffCF',
                                                             fontSize: 10,
                                                             fontWeight:
-                                                                FontWeight.w600),
+                                                                FontWeight
+                                                                    .w600),
                                                       ),
                                                     ),
                                                   )
@@ -344,7 +354,8 @@ class _ApplyState extends State<Apply> {
                                             Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
-                                                  builder: (context) => const Notif(),
+                                                  builder: (context) =>
+                                                      const Notif(),
                                                 ));
                                           },
                                           child: Icon(
@@ -445,46 +456,46 @@ class _ApplyState extends State<Apply> {
                   ),
 
                   Padding(
-                    padding: EdgeInsets.only(top: searchVal != '' ? 7 : 0),
-                    child: searchVal != ''
-                        ? Row(children: [
-                            Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 4),
-                                  child: Text(
-                                    'Search Result:',
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        color: base,
-                                        fontWeight: FontWeight.w700,
-                                        fontFamily: 'GreycliffCF'),
-                                  ),
-                                )
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(4),
-                                    color: bblue,
-                                  ),
-                                  child: Text(
-                                    searchVal,
-                                    style: TextStyle(
-                                        color: lblue,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: 'GreycliffCF'),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ])
-                        : null),
+                      padding: EdgeInsets.only(top: searchVal != '' ? 7 : 0),
+                      child: searchVal != ''
+                          ? Row(children: [
+                              Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 4),
+                                    child: Text(
+                                      'Search Result:',
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: base,
+                                          fontWeight: FontWeight.w700,
+                                          fontFamily: 'GreycliffCF'),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(4),
+                                      color: bblue,
+                                    ),
+                                    child: Text(
+                                      searchVal,
+                                      style: TextStyle(
+                                          color: lblue,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'GreycliffCF'),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ])
+                          : null),
 
                   const SizedBox(height: 12),
 
@@ -494,5 +505,4 @@ class _ApplyState extends State<Apply> {
               ))),
     );
   }
-
 }

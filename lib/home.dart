@@ -2,13 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
-import 'package:tubes/applyjob.dart';
-import 'package:tubes/find.dart';
-import 'package:tubes/navbar.dart';
-import 'package:tubes/notification.dart';
-import 'package:tubes/rsc/colors.dart';
+import 'package:jobilee/applyjob.dart';
+import 'package:jobilee/find.dart';
+import 'package:jobilee/navbar.dart';
+import 'package:jobilee/notification.dart';
+import 'package:jobilee/rsc/colors.dart';
 
-import 'package:tubes/authentication/authen_service.dart';
+import 'package:jobilee/authentication/authen_service.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,7 +16,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/foundation.dart';
-import 'package:tubes/rsc/log.dart';
+import 'package:jobilee/rsc/log.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key, required this.title});
@@ -123,9 +123,9 @@ class _HomeState extends State<Home> {
 
   bool searchJob(QueryDocumentSnapshot<Object?> job, String? search) {
     if (search != null) {
-      return job!.get('company_name').toLowerCase().contains(search)
-        || job!.get('position').toLowerCase().contains(search)
-        || job!.get('contract').toLowerCase().contains(search);
+      return job!.get('company_name').toLowerCase().contains(search) ||
+          job!.get('position').toLowerCase().contains(search) ||
+          job!.get('contract').toLowerCase().contains(search);
     }
 
     return false;
@@ -138,8 +138,7 @@ class _HomeState extends State<Home> {
         if (snapshot.connectionState == ConnectionState.done) {
           return ListView(
             children: snapshot.data!.docs
-                .map((doc) => searchJob(doc, search) ||
-                        search == ''
+                .map((doc) => searchJob(doc, search) || search == ''
                     ? Card(
                         color: Colors.white,
                         elevation: 0,
@@ -694,44 +693,49 @@ class _HomeState extends State<Home> {
                       ),
 
                       Padding(
-                        padding: EdgeInsets.only(top: searchVal != '' ? 7 : 0),
-                        child: searchVal != '' ? Row(children: [
-                          Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(right: 4),
-                                child: Text(
-                                  'Search Result:',
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      color: base,
-                                      fontWeight: FontWeight.w700,
-                                      fontFamily: 'GreycliffCF'),
-                                ),
-                              )
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4),
-                                  color: bblue,
-                                ),
-                                child: Text(
-                                  searchVal,
-                                  style: TextStyle(
-                                      color: lblue,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'GreycliffCF'),
-                                ),
-                              )
-                            ],
-                          ),
-                        ]) : null),
+                          padding:
+                              EdgeInsets.only(top: searchVal != '' ? 7 : 0),
+                          child: searchVal != ''
+                              ? Row(children: [
+                                  Column(
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 4),
+                                        child: Text(
+                                          'Search Result:',
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: base,
+                                              fontWeight: FontWeight.w700,
+                                              fontFamily: 'GreycliffCF'),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                          color: bblue,
+                                        ),
+                                        child: Text(
+                                          searchVal,
+                                          style: TextStyle(
+                                              color: lblue,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'GreycliffCF'),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ])
+                              : null),
 
                       const SizedBox(height: 12),
 

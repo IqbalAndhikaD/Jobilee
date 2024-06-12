@@ -1,11 +1,11 @@
 // ignore_for_file: use_super_parameters, annotate_overrides, prefer_const_constructors, use_build_context_synchronously, avoid_unnecessary_containers
 
 import 'package:flutter/material.dart';
-import 'package:tubes/login.dart';
-import 'package:tubes/navbar.dart';
-import 'package:tubes/rsc/colors.dart';
+import 'package:jobilee/login.dart';
+import 'package:jobilee/navbar.dart';
+import 'package:jobilee/rsc/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:tubes/authentication/authen_service.dart';
+import 'package:jobilee/authentication/authen_service.dart';
 
 class Loading extends StatefulWidget {
   const Loading({Key? key}) : super(key: key);
@@ -15,7 +15,7 @@ class Loading extends StatefulWidget {
 }
 
 class _LoadingState extends State<Loading> {
-  var isLogin = false;
+  bool isLogin = false;
   var userInfo = AuthenService().userInfo;
 
   checkIfLogin() async {
@@ -42,19 +42,22 @@ class _LoadingState extends State<Loading> {
           isLogin = true;
         });
       }
+
+      await _navigatetohome();
     });
   }
 
   void initState() {
     super.initState();
     checkIfLogin();
-    _navigatetohome();
   }
 
   _navigatetohome() async {
     await Future.delayed(Duration(milliseconds: 4000), () {});
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => isLogin ? NavBar(index: 0) : Login()));
+        context,
+        MaterialPageRoute(
+            builder: (context) => isLogin ? NavBar(index: 0) : Login()));
   }
 
   @override
@@ -63,38 +66,38 @@ class _LoadingState extends State<Loading> {
       body: SafeArea(
           child: Container(
               child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Image(
-              image: AssetImage('assets/images/jobilee.png'),
-              height: 59,
-              width: 260,
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 0.0, bottom: 10.0),
-            ),
-            Row(
-              children: [
-                Text(
-                  'Apply your future',
-                  style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'GreycliffCF'),
-                ),
-                Text(
-                  ' seamlessly.',
-                  style: TextStyle(
-                      color: lblue,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'GreycliffCF'),
-                )
-              ],
-            )
-          ])
-        ],
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    Image(
+                      image: AssetImage('assets/images/jobilee.png'),
+                      height: 59,
+                      width: 260,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 0.0, bottom: 10.0),
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          'Apply your future',
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'GreycliffCF'),
+                        ),
+                        Text(
+                          ' seamlessly.',
+                          style: TextStyle(
+                              color: lblue,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'GreycliffCF'),
+                        )
+                      ],
+                    )
+                  ])
+                ],
       ))),
     );
   }

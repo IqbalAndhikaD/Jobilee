@@ -2,10 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:tubes/authentication/authen_service.dart';
-import 'package:tubes/navbar.dart';
-import 'package:tubes/register.dart';
-import 'package:tubes/rsc/colors.dart';
+import 'package:jobilee/authentication/authen_service.dart';
+import 'package:jobilee/navbar.dart';
+import 'package:jobilee/register.dart';
+import 'package:jobilee/rsc/colors.dart';
 import '../exception/auth_exception.dart';
 
 class Login extends StatefulWidget {

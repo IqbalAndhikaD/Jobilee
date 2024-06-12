@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
-import 'package:tubes/applyjob.dart';
+import 'package:jobilee/applyjob.dart';
 
-import 'package:tubes/authentication/authen_service.dart';
-import 'package:tubes/notification.dart';
-import 'package:tubes/rsc/colors.dart';
+import 'package:jobilee/authentication/authen_service.dart';
+import 'package:jobilee/notification.dart';
+import 'package:jobilee/rsc/colors.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -88,8 +88,7 @@ class _FindState extends State<Find> {
         if (snapshot.connectionState == ConnectionState.done) {
           return ListView(
             children: snapshot.data!.docs
-                .map((doc) => searchJob(doc, search) ||
-                        search == ''
+                .map((doc) => searchJob(doc, search) || search == ''
                     ? Card(
                         color: Colors.white,
                         elevation: 0,
@@ -121,7 +120,8 @@ class _FindState extends State<Find> {
                                           fontFamily: 'GreycliffCF'),
                                     ),
                                     subtitle: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           doc.get('company_name'),
@@ -132,25 +132,30 @@ class _FindState extends State<Find> {
                                               fontFamily: 'GreycliffCF'),
                                         ),
                                         FutureBuilder(
-                                          future: _getJobTotalApplicant(doc.id),
-                                          builder: (context,
-                                              AsyncSnapshot<QuerySnapshot> res) {
-                                            if (res.connectionState ==
-                                                ConnectionState.done) {
-                                              return Text(
-                                                '${res.data!.docs.length} Applicants',
-                                                style: const TextStyle(
-                                                    fontSize: 10,
-                                                    color: Colors.grey,
-                                                    fontWeight: FontWeight.normal,
-                                                    fontFamily: 'GreycliffCF'),
-                                              );
-                                            } else if (snapshot.connectionState ==
-                                                ConnectionState.none) {
-                                              return const Text("No data");
-                                            }
-                                            return const CircularProgressIndicator();
-                                          }),
+                                            future:
+                                                _getJobTotalApplicant(doc.id),
+                                            builder: (context,
+                                                AsyncSnapshot<QuerySnapshot>
+                                                    res) {
+                                              if (res.connectionState ==
+                                                  ConnectionState.done) {
+                                                return Text(
+                                                  '${res.data!.docs.length} Applicants',
+                                                  style: const TextStyle(
+                                                      fontSize: 10,
+                                                      color: Colors.grey,
+                                                      fontWeight:
+                                                          FontWeight.normal,
+                                                      fontFamily:
+                                                          'GreycliffCF'),
+                                                );
+                                              } else if (snapshot
+                                                      .connectionState ==
+                                                  ConnectionState.none) {
+                                                return const Text("No data");
+                                              }
+                                              return const CircularProgressIndicator();
+                                            }),
                                         const SizedBox(height: 6),
                                         Row(
                                           crossAxisAlignment:
@@ -159,13 +164,14 @@ class _FindState extends State<Find> {
                                             Column(
                                               children: [
                                                 Container(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                          horizontal: 8,
-                                                          vertical: 4),
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 4),
                                                   decoration: BoxDecoration(
                                                     borderRadius:
-                                                        BorderRadius.circular(4),
+                                                        BorderRadius.circular(
+                                                            4),
                                                     color: dpurple,
                                                   ),
                                                   child: Text(
@@ -173,18 +179,23 @@ class _FindState extends State<Find> {
                                                     style: const TextStyle(
                                                         color: Colors.white,
                                                         fontSize: 9,
-                                                        fontWeight: FontWeight.bold,
-                                                        fontFamily: 'GreycliffCF'),
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontFamily:
+                                                            'GreycliffCF'),
                                                   ),
                                                 )
                                               ],
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.symmetric(
-                                                  horizontal: 4),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 4),
                                               child: Container(
-                                                padding: const EdgeInsets.symmetric(
-                                                    horizontal: 8, vertical: 4),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8,
+                                                        vertical: 4),
                                                 decoration: BoxDecoration(
                                                   borderRadius:
                                                       BorderRadius.circular(4),
@@ -195,8 +206,10 @@ class _FindState extends State<Find> {
                                                   style: TextStyle(
                                                       color: base,
                                                       fontSize: 9,
-                                                      fontWeight: FontWeight.bold,
-                                                      fontFamily: 'GreycliffCF'),
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontFamily:
+                                                          'GreycliffCF'),
                                                 ),
                                               ),
                                             ),
@@ -205,45 +218,53 @@ class _FindState extends State<Find> {
                                       ],
                                     ),
                                     trailing: Wrap(
-                                      crossAxisAlignment: WrapCrossAlignment.center,
+                                      crossAxisAlignment:
+                                          WrapCrossAlignment.center,
                                       alignment: WrapAlignment.spaceBetween,
                                       direction: Axis.horizontal,
                                       children: [
                                         Column(
                                           children: [
                                             Padding(
-                                              padding:
-                                                  const EdgeInsets.only(right: 8),
+                                              padding: const EdgeInsets.only(
+                                                  right: 8),
                                               child: FutureBuilder(
                                                   future: _isJobApplied(doc.id),
                                                   builder: (context,
-                                                      AsyncSnapshot<QuerySnapshot>
+                                                      AsyncSnapshot<
+                                                              QuerySnapshot>
                                                           res) {
                                                     if (res.connectionState ==
                                                         ConnectionState.done) {
                                                       return TextButton(
-                                                        style: TextButton.styleFrom(
-                                                          backgroundColor:
-                                                              res.data!.docs.isEmpty
-                                                                  ? lblue
-                                                                  : Colors.grey,
+                                                        style: TextButton
+                                                            .styleFrom(
+                                                          backgroundColor: res
+                                                                  .data!
+                                                                  .docs
+                                                                  .isEmpty
+                                                              ? lblue
+                                                              : Colors.grey,
                                                           shape:
                                                               RoundedRectangleBorder(
                                                             borderRadius:
                                                                 BorderRadius
-                                                                    .circular(20),
+                                                                    .circular(
+                                                                        20),
                                                           ),
-                                                          minimumSize: const Size(60, 0),
+                                                          minimumSize:
+                                                              const Size(60, 0),
                                                         ),
                                                         onPressed: () {
-                                                          if (res
-                                                              .data!.docs.isEmpty) {
+                                                          if (res.data!.docs
+                                                              .isEmpty) {
                                                             Navigator.push(
                                                                 context,
                                                                 MaterialPageRoute(
-                                                                  builder:
-                                                                      (context) =>
-                                                                          ApplyJob(job_id: doc.id),
+                                                                  builder: (context) =>
+                                                                      ApplyJob(
+                                                                          job_id:
+                                                                              doc.id),
                                                                 ));
                                                           }
                                                         },
@@ -252,18 +273,21 @@ class _FindState extends State<Find> {
                                                               ? 'Apply'
                                                               : 'Applied',
                                                           style: const TextStyle(
-                                                              color: Colors.white,
+                                                              color:
+                                                                  Colors.white,
                                                               fontFamily:
                                                                   'GreycliffCF',
                                                               fontSize: 10,
                                                               fontWeight:
-                                                                  FontWeight.w600),
+                                                                  FontWeight
+                                                                      .w600),
                                                         ),
                                                       );
                                                     } else if (snapshot
                                                             .connectionState ==
                                                         ConnectionState.none) {
-                                                      return const Text("No data");
+                                                      return const Text(
+                                                          "No data");
                                                     }
                                                     return const CircularProgressIndicator();
                                                   }),
@@ -283,19 +307,23 @@ class _FindState extends State<Find> {
                                                 icon: FutureBuilder(
                                                     future: _isJobSaved(doc.id),
                                                     builder: (context,
-                                                        AsyncSnapshot<QuerySnapshot>
+                                                        AsyncSnapshot<
+                                                                QuerySnapshot>
                                                             res) {
                                                       if (res.connectionState ==
-                                                          ConnectionState.done) {
-                                                        return Icon(res.data!.docs
-                                                                .isNotEmpty
+                                                          ConnectionState
+                                                              .done) {
+                                                        return Icon(res.data!
+                                                                .docs.isNotEmpty
                                                             ? Icons.bookmark
                                                             : Icons
                                                                 .bookmark_border_outlined);
                                                       } else if (snapshot
                                                               .connectionState ==
-                                                          ConnectionState.none) {
-                                                        return const Text("No data");
+                                                          ConnectionState
+                                                              .none) {
+                                                        return const Text(
+                                                            "No data");
                                                       }
                                                       return const CircularProgressIndicator();
                                                     }),
@@ -311,8 +339,9 @@ class _FindState extends State<Find> {
                               )
                             ],
                           ),
-                        )) : Text(''))
-                    .toList(),
+                        ))
+                    : Text(''))
+                .toList(),
           );
         } else if (snapshot.connectionState == ConnectionState.none) {
           return const Text("No data");
@@ -336,251 +365,252 @@ class _FindState extends State<Find> {
     return Scaffold(
       body: SafeArea(
           child: Form(
-            key: _formKey,
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                children: [
-                  // PP-Nama-Notif
-                  SizedBox(
-                    //color: Colors.black.withOpacity(0.2),
-                    height: 60,
-                    width: MediaQuery.of(context).size.width,
-                    child: Stack(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          textDirection: TextDirection.ltr,
+              key: _formKey,
+              child: Container(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    children: [
+                      // PP-Nama-Notif
+                      SizedBox(
+                        //color: Colors.black.withOpacity(0.2),
+                        height: 60,
+                        width: MediaQuery.of(context).size.width,
+                        child: Stack(
                           children: [
-                            const SizedBox(height: 90),
-                            ProfilePicture(
-                              name: userInfo?['username'] ?? '',
-                              radius: 36,
-                              fontsize: 20,
-                              img: userInfo?['profile_pic'] ?? '',
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              textDirection: TextDirection.ltr,
+                              children: [
+                                const SizedBox(height: 90),
+                                ProfilePicture(
+                                  name: userInfo?['username'] ?? '',
+                                  radius: 36,
+                                  fontsize: 20,
+                                  img: userInfo?['profile_pic'] ?? '',
+                                ),
+                              ],
+                            ),
+
+                            //Nama & Graduate
+                            Container(
+                              //color: Colors.red.withOpacity(0.2),
+                              margin: const EdgeInsets.only(
+                                  right: 65, left: 85, top: 3, bottom: 0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  RichText(
+                                    text: TextSpan(
+                                        style: TextStyle(
+                                          fontSize: 22,
+                                          color: base,
+                                          fontWeight: FontWeight.w900,
+                                          fontFamily: 'GreycliffCF',
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                              text:
+                                                  'Hello, ${userInfo?['username'] ?? ''}')
+                                        ]),
+                                  ),
+
+                                  //Gradute
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 14, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(99),
+                                      color: lblue,
+                                    ),
+                                    child: const Text(
+                                      'Fresh Graduate',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'GreycliffCF'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            //Notif
+                            Container(
+                              //color: Colors.red.withOpacity(0.2),
+                              margin: const EdgeInsets.only(
+                                  right: 0, left: 323, top: 5, bottom: 0),
+                              child: Column(
+                                children: [
+                                  Padding(
+                                      padding: const EdgeInsets.all(0),
+                                      child: SizedBox(
+                                          child: TextButton(
+                                              style: TextButton.styleFrom(
+                                                backgroundColor: bblue,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(99),
+                                                ),
+                                              ),
+                                              onPressed: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const Notif(),
+                                                    ));
+                                              },
+                                              child: Icon(
+                                                Icons
+                                                    .notifications_none_outlined,
+                                                color: lblue,
+                                                size: 24,
+                                              ))))
+                                ],
+                              ),
                             ),
                           ],
                         ),
+                      ),
+                      const SizedBox(height: 16),
 
-                        //Nama & Graduate
-                        Container(
-                          //color: Colors.red.withOpacity(0.2),
-                          margin: const EdgeInsets.only(
-                              right: 65, left: 85, top: 3, bottom: 0),
+                      // Search Job
+                      Row(children: <Widget>[
+                        Flexible(
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              RichText(
-                                text: TextSpan(
-                                    style: TextStyle(
-                                      fontSize: 22,
-                                      color: base,
-                                      fontWeight: FontWeight.w900,
-                                      fontFamily: 'GreycliffCF',
-                                    ),
-                                    children: [
-                                      TextSpan(
-                                          text:
-                                              'Hello, ${userInfo?['username'] ?? ''}')
-                                    ]),
-                              ),
-
-                              //Gradute
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 14, vertical: 4),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(99),
-                                  color: lblue,
-                                ),
-                                child: const Text(
-                                  'Fresh Graduate',
+                              SizedBox(
+                                height: 40,
+                                child: TextFormField(
+                                  controller: _search,
                                   style: TextStyle(
-                                      color: Colors.white,
                                       fontSize: 12,
-                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey[800],
                                       fontFamily: 'GreycliffCF'),
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Colors.grey[200],
+                                    border: InputBorder.none,
+                                    hintText:
+                                        'Search job, company, post and others...',
+                                    hintStyle: TextStyle(
+                                        color: Colors.grey[600],
+                                        fontSize: 14,
+                                        fontFamily: 'GreycliffCF'),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 24),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide:
+                                          const BorderSide(color: Colors.white),
+                                      borderRadius: BorderRadius.circular(25.7),
+                                    ),
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide:
+                                          const BorderSide(color: Colors.white),
+                                      borderRadius: BorderRadius.circular(25.7),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ],
                           ),
                         ),
+                        Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8),
+                              child: TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    searchVal = _search.text;
+                                  });
+                                },
+                                child: Icon(
+                                  Icons.search,
+                                  color: bblue,
+                                ),
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.all(9),
+                                  backgroundColor: lblue,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(999),
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        )
+                      ]),
 
-                        //Notif
-                        Container(
-                          //color: Colors.red.withOpacity(0.2),
-                          margin: const EdgeInsets.only(
-                              right: 0, left: 323, top: 5, bottom: 0),
-                          child: Column(
-                            children: [
-                              Padding(
-                                  padding: const EdgeInsets.all(0),
-                                  child: SizedBox(
-                                      child: TextButton(
-                                          style: TextButton.styleFrom(
-                                            backgroundColor: bblue,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(99),
-                                            ),
-                                          ),
-                                          onPressed: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) => const Notif(),
-                                                ));
-                                          },
-                                          child: Icon(
-                                            Icons.notifications_none_outlined,
-                                            color: lblue,
-                                            size: 24,
-                                          ))))
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
+                      const SizedBox(height: 24),
 
-                  // Search Job
-                  Row(children: <Widget>[
-                    Flexible(
-                      child: Column(
+                      // Browse Jobs
+                      Row(
                         children: [
-                          SizedBox(
-                            height: 40,
-                            child: TextFormField(
-                              controller: _search,
-                              style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey[800],
-                                  fontFamily: 'GreycliffCF'),
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: Colors.grey[200],
-                                border: InputBorder.none,
-                                hintText:
-                                    'Search job, company, post and others...',
-                                hintStyle: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontSize: 14,
-                                    fontFamily: 'GreycliffCF'),
-                                contentPadding:
-                                    const EdgeInsets.symmetric(horizontal: 24),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide:
-                                      const BorderSide(color: Colors.white),
-                                  borderRadius: BorderRadius.circular(25.7),
-                                ),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide:
-                                      const BorderSide(color: Colors.white),
-                                  borderRadius: BorderRadius.circular(25.7),
-                                ),
-                              ),
-                            ),
+                          Text(
+                            'Find Jobs',
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: base,
+                                fontWeight: FontWeight.w900,
+                                fontFamily: 'GreycliffCF'),
                           ),
                         ],
                       ),
-                    ),
-                    Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8),
-                          child: TextButton(
-                            onPressed: () {
-                              setState(() {
-                                searchVal = _search.text;
-                              });
-                            },
-                            child: Icon(
-                              Icons.search,
-                              color: bblue,
-                            ),
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.all(9),
-                              backgroundColor: lblue,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(999),
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
-                    )
-                  ]),
 
-                  const SizedBox(height: 24),
+                      Padding(
+                          padding:
+                              EdgeInsets.only(top: searchVal != '' ? 7 : 0),
+                          child: searchVal != ''
+                              ? Row(children: [
+                                  Column(
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 4),
+                                        child: Text(
+                                          'Search Result:',
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: base,
+                                              fontWeight: FontWeight.w700,
+                                              fontFamily: 'GreycliffCF'),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                          color: bblue,
+                                        ),
+                                        child: Text(
+                                          searchVal,
+                                          style: TextStyle(
+                                              color: lblue,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'GreycliffCF'),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ])
+                              : null),
 
-                  // Browse Jobs
-                  Row(
-                    children: [
-                      Text(
-                        'Find Jobs',
-                        style: TextStyle(
-                            fontSize: 18,
-                            color: base,
-                            fontWeight: FontWeight.w900,
-                            fontFamily: 'GreycliffCF'),
-                      ),
+                      const SizedBox(height: 12),
+
+                      // list
+                      Flexible(child: _jobVacanciesList(searchVal))
                     ],
-                  ),
-
-                  Padding(
-                    padding:
-                        EdgeInsets.only(top: searchVal != '' ? 7 : 0),
-                    child: searchVal != ''
-                        ? Row(children: [
-                            Column(
-                              children: [
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.only(right: 4),
-                                  child: Text(
-                                    'Search Result:',
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        color: base,
-                                        fontWeight: FontWeight.w700,
-                                        fontFamily: 'GreycliffCF'),
-                                  ),
-                                )
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(4),
-                                    color: bblue,
-                                  ),
-                                  child: Text(
-                                    searchVal,
-                                    style: TextStyle(
-                                        color: lblue,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: 'GreycliffCF'),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ])
-                        : null),
-
-                  const SizedBox(height: 12),
-
-                  // list
-                  Flexible(child: _jobVacanciesList(searchVal))
-                ],
-              )))),
+                  )))),
     );
   }
-
 }

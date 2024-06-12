@@ -1,12 +1,12 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
-import 'package:tubes/apply.dart';
-import 'package:tubes/find.dart';
-import 'package:tubes/home.dart';
-import 'package:tubes/profile.dart';
-import 'package:tubes/rsc/colors.dart';
-import 'package:tubes/saved.dart';
+import 'package:jobilee/apply.dart';
+import 'package:jobilee/find.dart';
+import 'package:jobilee/home.dart';
+import 'package:jobilee/profile.dart';
+import 'package:jobilee/rsc/colors.dart';
+import 'package:jobilee/saved.dart';
 
 class NavBar extends StatefulWidget {
   final int index;
@@ -41,7 +41,8 @@ class _NavBarState extends State<NavBar> {
       bottomNavigationBar: NavigationBarTheme(
         data: NavigationBarThemeData(
           indicatorColor: lblue,
-          labelTextStyle: MaterialStateProperty.all(const TextStyle(fontSize: 0)),
+          labelTextStyle:
+              MaterialStateProperty.all(const TextStyle(fontSize: 0)),
         ),
         child: NavigationBar(
           height: 60,

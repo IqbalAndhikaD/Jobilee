@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:tubes/authentication/authen_service.dart';
-import 'package:tubes/rsc/colors.dart';
+import 'package:jobilee/authentication/authen_service.dart';
+import 'package:jobilee/rsc/colors.dart';
 
 import 'package:firebase_database/firebase_database.dart';
 
@@ -14,7 +14,8 @@ class Notif extends StatefulWidget {
 
 class _NotifState extends State<Notif> {
   final user = AuthenService().currentUser;
-  final notificationRef = FirebaseDatabase.instance.ref('notifications/${AuthenService().currentUser!.uid}')
+  final notificationRef = FirebaseDatabase.instance
+      .ref('notifications/${AuthenService().currentUser!.uid}')
       .orderByChild('datetime');
 
   @override
@@ -34,9 +35,11 @@ class _NotifState extends State<Notif> {
         stream: notificationRef.onValue,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            final data = snapshot.data!.snapshot.value as Map<dynamic, dynamic>?;
+            final data =
+                snapshot.data!.snapshot.value as Map<dynamic, dynamic>?;
             if (data != null) {
-              final List<Notification> notifications = data.entries.map((entry) {
+              final List<Notification> notifications =
+                  data.entries.map((entry) {
                 final value = entry.value as Map<dynamic, dynamic>;
                 return Notification(
                   title: value['title'],
@@ -85,6 +88,5 @@ class Notification {
   final String title;
   final String msg;
 
-  Notification(
-      {required this.title, required this.msg});
+  Notification({required this.title, required this.msg});
 }

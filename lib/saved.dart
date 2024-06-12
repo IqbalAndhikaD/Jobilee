@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 
-import 'package:tubes/authentication/authen_service.dart';
-import 'package:tubes/notification.dart';
-import 'package:tubes/rsc/colors.dart';
+import 'package:jobilee/authentication/authen_service.dart';
+import 'package:jobilee/notification.dart';
+import 'package:jobilee/rsc/colors.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -41,7 +41,6 @@ class _SavedState extends State<Saved> {
     return jobSaved.get();
   }
 
-
   Future<DocumentSnapshot<Map<String, dynamic>>> getJobVacationData(
       String jobVacationId) async {
     DocumentReference<Map<String, dynamic>> jobVacations = FirebaseFirestore
@@ -74,14 +73,16 @@ class _SavedState extends State<Saved> {
     try {
       if (res.docs.isNotEmpty) {
         await savedJobs.doc(res.docs[0].id).delete();
-        await AuthenService().pushNotification('Job successfully unsaved', 'Job "${job.get('position')} - ${job.get('company_name')}" has been unsaved');
+        await AuthenService().pushNotification('Job successfully unsaved',
+            'Job "${job.get('position')} - ${job.get('company_name')}" has been unsaved');
         Fluttertoast.showToast(msg: "Job Unsaved");
       } else {
         await savedJobs.add({
           'user_id': user!.uid,
           'job_vacation_id': jobId,
         });
-        await AuthenService().pushNotification('Job successfully saved', 'Job "${job.get('position')} - ${job.get('company_name')}" has been saved');
+        await AuthenService().pushNotification('Job successfully saved',
+            'Job "${job.get('position')} - ${job.get('company_name')}" has been saved');
         Fluttertoast.showToast(msg: "Job Saved");
       }
     } catch (e) {
@@ -113,57 +114,91 @@ class _SavedState extends State<Saved> {
                       if (res.connectionState == ConnectionState.done) {
                         if (searchJob(res, search) || search == '') {
                           return Card(
-                            color: Colors.white,
-                            elevation: 0,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 12),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      color: Colors.grey[200],
+                              color: Colors.white,
+                              elevation: 0,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 12),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        color: Colors.grey[200],
+                                      ),
+                                      padding: const EdgeInsets.all(8),
+                                      child: Image(
+                                        image: NetworkImage(
+                                            res.data!.get('company_img')),
+                                        height: 35,
+                                        width: 35,
+                                      ),
                                     ),
-                                    padding: const EdgeInsets.all(8),
-                                    child: Image(
-                                      image: NetworkImage(
-                                          res.data!.get('company_img')),
-                                      height: 35,
-                                      width: 35,
-                                    ),
-                                  ),
-                                  Flexible(
-                                    child: ListTile(
-                                        title: Text(
-                                          res.data!.get('position'),
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: base,
-                                              fontWeight: FontWeight.bold,
-                                              fontFamily: 'GreycliffCF'),
-                                        ),
-                                        subtitle: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              res.data!.get('company_name'),
-                                              style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: base,
-                                                  fontWeight: FontWeight.normal,
-                                                  fontFamily: 'GreycliffCF'),
-                                            ),
-                                            const SizedBox(height: 6),
-                                            Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Column(
-                                                  children: [
-                                                    Container(
+                                    Flexible(
+                                      child: ListTile(
+                                          title: Text(
+                                            res.data!.get('position'),
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: base,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'GreycliffCF'),
+                                          ),
+                                          subtitle: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                res.data!.get('company_name'),
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: base,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    fontFamily: 'GreycliffCF'),
+                                              ),
+                                              const SizedBox(height: 6),
+                                              Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Column(
+                                                    children: [
+                                                      Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal: 8,
+                                                                vertical: 4),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(4),
+                                                          color: dpurple,
+                                                        ),
+                                                        child: Text(
+                                                          res.data!
+                                                              .get('contract'),
+                                                          style: const TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 9,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontFamily:
+                                                                  'GreycliffCF'),
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 4),
+                                                    child: Container(
                                                       padding: const EdgeInsets
                                                           .symmetric(
                                                           horizontal: 8,
@@ -172,113 +207,86 @@ class _SavedState extends State<Saved> {
                                                         borderRadius:
                                                             BorderRadius
                                                                 .circular(4),
-                                                        color: dpurple,
+                                                        color: yellow,
                                                       ),
                                                       child: Text(
                                                         res.data!
-                                                            .get('contract'),
-                                                        style: const TextStyle(
-                                                            color: Colors.white,
+                                                            .get('work_type'),
+                                                        style: TextStyle(
+                                                            color: base,
                                                             fontSize: 9,
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                             fontFamily:
                                                                 'GreycliffCF'),
                                                       ),
-                                                    )
-                                                  ],
-                                                ),
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(horizontal: 4),
-                                                  child: Container(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 8,
-                                                        vertical: 4),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                          trailing: Wrap(
+                                            crossAxisAlignment:
+                                                WrapCrossAlignment.center,
+                                            alignment:
+                                                WrapAlignment.spaceBetween,
+                                            direction: Axis.horizontal,
+                                            children: [
+                                              Column(
+                                                children: [
+                                                  Ink(
+                                                    width: 40,
+                                                    height: 40,
                                                     decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              4),
-                                                      color: yellow,
+                                                      shape: BoxShape.circle,
+                                                      color: bblue,
                                                     ),
-                                                    child: Text(
-                                                      res.data!
-                                                          .get('work_type'),
-                                                      style: TextStyle(
-                                                          color: base,
-                                                          fontSize: 9,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontFamily:
-                                                              'GreycliffCF'),
-                                                    ),
+                                                    child: IconButton(
+                                                        icon: FutureBuilder(
+                                                            future: _isJobSaved(
+                                                                doc.get(
+                                                                    'job_vacation_id')),
+                                                            builder: (context,
+                                                                AsyncSnapshot<
+                                                                        QuerySnapshot>
+                                                                    res) {
+                                                              if (res.connectionState ==
+                                                                  ConnectionState
+                                                                      .done) {
+                                                                return Icon(res
+                                                                        .data!
+                                                                        .docs
+                                                                        .isNotEmpty
+                                                                    ? Icons
+                                                                        .bookmark
+                                                                    : Icons
+                                                                        .bookmark_border_outlined);
+                                                              } else if (snapshot
+                                                                      .connectionState ==
+                                                                  ConnectionState
+                                                                      .none) {
+                                                                return const Text(
+                                                                    "No data");
+                                                              }
+                                                              return const CircularProgressIndicator();
+                                                            }),
+                                                        color: lblue,
+                                                        iconSize: 20,
+                                                        onPressed: () async {
+                                                          await _saveJob(doc.get(
+                                                              'job_vacation_id'));
+                                                          setState(() {});
+                                                        }),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        trailing: Wrap(
-                                          crossAxisAlignment:
-                                              WrapCrossAlignment.center,
-                                          alignment: WrapAlignment.spaceBetween,
-                                          direction: Axis.horizontal,
-                                          children: [
-                                            Column(
-                                              children: [
-                                                Ink(
-                                                  width: 40,
-                                                  height: 40,
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: bblue,
-                                                  ),
-                                                  child: IconButton(
-                                                      icon: FutureBuilder(
-                                                          future: _isJobSaved(
-                                                              doc.get(
-                                                                  'job_vacation_id')),
-                                                          builder: (context,
-                                                              AsyncSnapshot<
-                                                                      QuerySnapshot>
-                                                                  res) {
-                                                            if (res.connectionState ==
-                                                                ConnectionState
-                                                                    .done) {
-                                                              return Icon(res
-                                                                      .data!
-                                                                      .docs
-                                                                      .isNotEmpty
-                                                                  ? Icons
-                                                                      .bookmark
-                                                                  : Icons
-                                                                      .bookmark_border_outlined);
-                                                            } else if (snapshot
-                                                                    .connectionState ==
-                                                                ConnectionState
-                                                                    .none) {
-                                                              return const Text(
-                                                                  "No data");
-                                                            }
-                                                            return const CircularProgressIndicator();
-                                                          }),
-                                                      color: lblue,
-                                                      iconSize: 20,
-                                                      onPressed: () async {
-                                                        await _saveJob(doc.get(
-                                                            'job_vacation_id'));
-                                                        setState(() {});
-                                                      }),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        )),
-                                  )
-                                ],
-                              ),
-                            ));
+                                                ],
+                                              ),
+                                            ],
+                                          )),
+                                    )
+                                  ],
+                                ),
+                              ));
                         }
 
                         return Container();
@@ -312,249 +320,251 @@ class _SavedState extends State<Saved> {
     return Scaffold(
       body: SafeArea(
           child: Form(
-            key: _formKey,
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                children: [
-                  // PP-Nama-Notif
-                  SizedBox(
-                    height: 60,
-                    width: MediaQuery.of(context).size.width,
-                    child: Stack(
-                      children: [
-                        //profile
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          textDirection: TextDirection.ltr,
+              key: _formKey,
+              child: Container(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    children: [
+                      // PP-Nama-Notif
+                      SizedBox(
+                        height: 60,
+                        width: MediaQuery.of(context).size.width,
+                        child: Stack(
                           children: [
-                            const SizedBox(height: 90),
-                            ProfilePicture(
-                              name: userInfo?['username'] ?? '',
-                              radius: 36,
-                              fontsize: 20,
-                              img: userInfo?['profile_pic'] ?? '',
+                            //profile
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              textDirection: TextDirection.ltr,
+                              children: [
+                                const SizedBox(height: 90),
+                                ProfilePicture(
+                                  name: userInfo?['username'] ?? '',
+                                  radius: 36,
+                                  fontsize: 20,
+                                  img: userInfo?['profile_pic'] ?? '',
+                                ),
+                              ],
+                            ),
+
+                            //Nama & Graduate
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  right: 65, left: 85, top: 3, bottom: 0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  RichText(
+                                    text: TextSpan(
+                                        style: TextStyle(
+                                          fontSize: 22,
+                                          color: base,
+                                          fontWeight: FontWeight.w900,
+                                          fontFamily: 'GreycliffCF',
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                              text:
+                                                  'Hello, ${userInfo?['username'] ?? ''}'),
+                                        ]),
+                                  ),
+
+                                  //Gradute
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 14, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(99),
+                                      color: lblue,
+                                    ),
+                                    child: const Text(
+                                      'Fresh Graduate',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'GreycliffCF'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            //Notif
+                            Container(
+                              //color: Colors.red.withOpacity(0.2),
+                              margin: const EdgeInsets.only(
+                                  right: 0, left: 323, top: 5, bottom: 0),
+                              child: Column(
+                                children: [
+                                  Padding(
+                                      padding: const EdgeInsets.all(0),
+                                      child: SizedBox(
+                                          child: TextButton(
+                                              style: TextButton.styleFrom(
+                                                backgroundColor: bblue,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(99),
+                                                ),
+                                              ),
+                                              onPressed: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const Notif(),
+                                                    ));
+                                              },
+                                              child: Icon(
+                                                Icons
+                                                    .notifications_none_outlined,
+                                                color: lblue,
+                                                size: 24,
+                                              ))))
+                                ],
+                              ),
                             ),
                           ],
                         ),
+                      ),
+                      const SizedBox(height: 16),
 
-                        //Nama & Graduate
-                        Container(
-                          margin: const EdgeInsets.only(
-                              right: 65, left: 85, top: 3, bottom: 0),
+                      // Search Job
+                      Row(children: <Widget>[
+                        Flexible(
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              RichText(
-                                text: TextSpan(
-                                    style: TextStyle(
-                                      fontSize: 22,
-                                      color: base,
-                                      fontWeight: FontWeight.w900,
-                                      fontFamily: 'GreycliffCF',
-                                    ),
-                                    children: [
-                                      TextSpan(
-                                          text:
-                                              'Hello, ${userInfo?['username'] ?? ''}'),
-                                    ]),
-                              ),
-
-                              //Gradute
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 14, vertical: 4),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(99),
-                                  color: lblue,
-                                ),
-                                child: const Text(
-                                  'Fresh Graduate',
+                              SizedBox(
+                                height: 40,
+                                child: TextFormField(
+                                  controller: _search,
                                   style: TextStyle(
-                                      color: Colors.white,
                                       fontSize: 12,
-                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey[800],
                                       fontFamily: 'GreycliffCF'),
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Colors.grey[200],
+                                    border: InputBorder.none,
+                                    hintText:
+                                        'Search job, company, post and others...',
+                                    hintStyle: TextStyle(
+                                        color: Colors.grey[600],
+                                        fontSize: 14,
+                                        fontFamily: 'GreycliffCF'),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 24),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide:
+                                          const BorderSide(color: Colors.white),
+                                      borderRadius: BorderRadius.circular(25.7),
+                                    ),
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide:
+                                          const BorderSide(color: Colors.white),
+                                      borderRadius: BorderRadius.circular(25.7),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ],
                           ),
                         ),
+                        Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8),
+                              child: TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    searchVal = _search.text;
+                                  });
+                                },
+                                child: Icon(
+                                  Icons.search,
+                                  color: bblue,
+                                ),
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.all(9),
+                                  backgroundColor: lblue,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(999),
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        )
+                      ]),
 
-                        //Notif
-                        Container(
-                          //color: Colors.red.withOpacity(0.2),
-                          margin: const EdgeInsets.only(
-                              right: 0, left: 323, top: 5, bottom: 0),
-                          child: Column(
-                            children: [
-                              Padding(
-                                  padding: const EdgeInsets.all(0),
-                                  child: SizedBox(
-                                      child: TextButton(
-                                          style: TextButton.styleFrom(
-                                            backgroundColor: bblue,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(99),
-                                            ),
-                                          ),
-                                          onPressed: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) => const Notif(),
-                                                ));
-                                          },
-                                          child: Icon(
-                                            Icons.notifications_none_outlined,
-                                            color: lblue,
-                                            size: 24,
-                                          ))))
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
+                      const SizedBox(height: 24),
 
-                  // Search Job
-                  Row(children: <Widget>[
-                    Flexible(
-                      child: Column(
+                      // Browse Jobs
+                      Row(
                         children: [
-                          SizedBox(
-                            height: 40,
-                            child: TextFormField(
-                              controller: _search,
-                              style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey[800],
-                                  fontFamily: 'GreycliffCF'),
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: Colors.grey[200],
-                                border: InputBorder.none,
-                                hintText:
-                                    'Search job, company, post and others...',
-                                hintStyle: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontSize: 14,
-                                    fontFamily: 'GreycliffCF'),
-                                contentPadding:
-                                    const EdgeInsets.symmetric(horizontal: 24),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide:
-                                      const BorderSide(color: Colors.white),
-                                  borderRadius: BorderRadius.circular(25.7),
-                                ),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide:
-                                      const BorderSide(color: Colors.white),
-                                  borderRadius: BorderRadius.circular(25.7),
-                                ),
-                              ),
-                            ),
+                          Text(
+                            'Saved Jobs',
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: base,
+                                fontWeight: FontWeight.w900,
+                                fontFamily: 'GreycliffCF'),
                           ),
                         ],
                       ),
-                    ),
-                    Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8),
-                          child: TextButton(
-                            onPressed: () {
-                              setState(() {
-                                searchVal = _search.text;
-                              });
-                            },
-                            child: Icon(
-                              Icons.search,
-                              color: bblue,
-                            ),
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.all(9),
-                              backgroundColor: lblue,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(999),
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
-                    )
-                  ]),
 
-                  const SizedBox(height: 24),
+                      Padding(
+                          padding:
+                              EdgeInsets.only(top: searchVal != '' ? 7 : 0),
+                          child: searchVal != ''
+                              ? Row(children: [
+                                  Column(
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 4),
+                                        child: Text(
+                                          'Search Result:',
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: base,
+                                              fontWeight: FontWeight.w700,
+                                              fontFamily: 'GreycliffCF'),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                          color: bblue,
+                                        ),
+                                        child: Text(
+                                          searchVal,
+                                          style: TextStyle(
+                                              color: lblue,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'GreycliffCF'),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ])
+                              : null),
 
-                  // Browse Jobs
-                  Row(
-                    children: [
-                      Text(
-                        'Saved Jobs',
-                        style: TextStyle(
-                            fontSize: 18,
-                            color: base,
-                            fontWeight: FontWeight.w900,
-                            fontFamily: 'GreycliffCF'),
-                      ),
+                      const SizedBox(height: 12),
+
+                      // list
+                      Flexible(child: _savedJobsList(searchVal))
                     ],
-                  ),
-
-                  Padding(
-                    padding:
-                        EdgeInsets.only(top: searchVal != '' ? 7 : 0),
-                    child: searchVal != ''
-                        ? Row(children: [
-                            Column(
-                              children: [
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.only(right: 4),
-                                  child: Text(
-                                    'Search Result:',
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        color: base,
-                                        fontWeight: FontWeight.w700,
-                                        fontFamily: 'GreycliffCF'),
-                                  ),
-                                )
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(4),
-                                    color: bblue,
-                                  ),
-                                  child: Text(
-                                    searchVal,
-                                    style: TextStyle(
-                                        color: lblue,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: 'GreycliffCF'),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ])
-                        : null),
-
-                  const SizedBox(height: 12),
-
-                  // list
-                  Flexible(child: _savedJobsList(searchVal))
-                ],
-              )))),
+                  )))),
     );
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tubes/loading.dart';
+import 'package:jobilee/loading.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Jolibee',
+      title: 'Jobilee',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,

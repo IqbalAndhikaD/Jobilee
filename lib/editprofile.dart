@@ -1,4 +1,3 @@
-
 // ignore_for_file: camel_case_types, use_build_context_synchronously
 
 import 'dart:io';
@@ -6,11 +5,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tubes/rsc/log.dart';
+import 'package:jobilee/rsc/log.dart';
 import 'navbar.dart';
 
-import 'package:tubes/authentication/authen_service.dart';
-import 'package:tubes/rsc/colors.dart';
+import 'package:jobilee/authentication/authen_service.dart';
+import 'package:jobilee/rsc/colors.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -75,17 +74,19 @@ class _editProfileState extends State<editProfile> {
   Future<void> uploadProfilePicture() async {
     if (_image != null) {
       var imageName = DateTime.now().millisecondsSinceEpoch.toString();
-      var storageRef = FirebaseStorage.instance.ref().child('profile_pic/${user!.uid}/$imageName.jpg'); 
-      var uploadTask = storageRef.putFile(_image!); 
-      var downloadUrl = await (await uploadTask).ref.getDownloadURL(); 
+      var storageRef = FirebaseStorage.instance
+          .ref()
+          .child('profile_pic/${user!.uid}/$imageName.jpg');
+      var uploadTask = storageRef.putFile(_image!);
+      var downloadUrl = await (await uploadTask).ref.getDownloadURL();
 
       try {
         await FirebaseFirestore.instance
             .collection('users')
             .doc(user!.uid)
             .update({
-              'profile_pic': downloadUrl,
-            });
+          'profile_pic': downloadUrl,
+        });
         Fluttertoast.showToast(msg: "Profile picture updated");
         Navigator.pushReplacement(
             context,
@@ -188,23 +189,7 @@ class _editProfileState extends State<editProfile> {
                                                   title: Text(
                                                     'Camera',
                                                     style: TextStyle(
-                                                      color: lblue,
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                        FontWeight.bold,
-                                                      fontFamily:
-                                                        'GreycliffCF'),
-                                                  ),
-                                                  onTap: () {
-                                                    Navigator.pop(context);
-                                                    _getImage(ImageSource.camera);
-                                                  },
-                                                ),
-                                                ListTile(
-                                                  title: Text(
-                                                    'Gallery',
-                                                    style: TextStyle(
-                                                      color: lblue,
+                                                        color: lblue,
                                                         fontSize: 18,
                                                         fontWeight:
                                                             FontWeight.bold,
@@ -213,7 +198,25 @@ class _editProfileState extends State<editProfile> {
                                                   ),
                                                   onTap: () {
                                                     Navigator.pop(context);
-                                                    _getImage(ImageSource.gallery);
+                                                    _getImage(
+                                                        ImageSource.camera);
+                                                  },
+                                                ),
+                                                ListTile(
+                                                  title: Text(
+                                                    'Gallery',
+                                                    style: TextStyle(
+                                                        color: lblue,
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontFamily:
+                                                            'GreycliffCF'),
+                                                  ),
+                                                  onTap: () {
+                                                    Navigator.pop(context);
+                                                    _getImage(
+                                                        ImageSource.gallery);
                                                   },
                                                 ),
                                               ],
@@ -250,15 +253,17 @@ class _editProfileState extends State<editProfile> {
                 const SizedBox(height: 9),
 
                 // Username Title
-                const Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                  Text(
-                    'Username',
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'GreycliffCF'),
-                  ),
-                ]),
+                const Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Username',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'GreycliffCF'),
+                      ),
+                    ]),
                 // First-Name Field
                 TextFormField(
                   controller: _username,
@@ -280,15 +285,17 @@ class _editProfileState extends State<editProfile> {
                 ),
 
                 // Password Title
-                const Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                  Text(
-                    'Password',
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'GreycliffCF'),
-                  ),
-                ]),
+                const Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Password',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'GreycliffCF'),
+                      ),
+                    ]),
                 // First-Name Field
                 TextFormField(
                   controller: _password,

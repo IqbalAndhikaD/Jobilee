@@ -1,15 +1,15 @@
 // ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:tubes/getmap.dart';
-import 'package:tubes/navbar.dart';
+import 'package:jobilee/getmap.dart';
+import 'package:jobilee/navbar.dart';
 
-import 'package:tubes/authentication/authen_service.dart';
-import 'package:tubes/rsc/colors.dart';
+import 'package:jobilee/authentication/authen_service.dart';
+import 'package:jobilee/rsc/colors.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tubes/rsc/log.dart';
+import 'package:jobilee/rsc/log.dart';
 
 class ApplyJob extends StatefulWidget {
   final String job_id;
@@ -124,8 +124,8 @@ class _ApplyJobState extends State<ApplyJob> {
             // Cover Gambar Perusahaan
             buildCoverImage(job != null ? job.data()['cover_img'] : ''),
 
-            Padding(
-              padding: const EdgeInsets.only(top: 200.0),
+            Container(
+              margin: EdgeInsets.only(top: height * 0.25),
               child: Container(
                 child: SizedBox(
                   width: screenWidth,
@@ -425,6 +425,7 @@ class _ApplyJobState extends State<ApplyJob> {
                                 ],
                               ),
                             ),
+                            
                             FutureBuilder(
                                 future: _isJobApplied(widget.job_id),
                                 builder: (context,
@@ -433,8 +434,8 @@ class _ApplyJobState extends State<ApplyJob> {
                                       ConnectionState.done) {
                                     return SizedBox(
                                       height: res.data!.docs.isEmpty
-                                          ? height * 0.35
-                                          : height * 0.40,
+                                          ? height * 0.32
+                                          : height * 0.35,
                                       child: SingleChildScrollView(
                                         child: Padding(
                                           padding: const EdgeInsets.only(
@@ -634,7 +635,7 @@ class _ApplyJobState extends State<ApplyJob> {
               alignment: Alignment.center,
               children: [
                 Positioned(
-                    top: 730,
+                    bottom: 64,
                     child: FutureBuilder(
                         future: _isJobApplied(widget.job_id),
                         builder: (context, AsyncSnapshot<QuerySnapshot> res) {
@@ -678,7 +679,7 @@ class _ApplyJobState extends State<ApplyJob> {
               alignment: Alignment.center,
               children: [
                 Positioned(
-                  top: 780,
+                  bottom: 10,
                   child: TextButton(
                       style: TextButton.styleFrom(
                         padding: const EdgeInsets.all(10),
@@ -689,16 +690,14 @@ class _ApplyJobState extends State<ApplyJob> {
                         ),
                       ),
                       onPressed: () => {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) =>
-                                    GetMap(
-                                      job_id: widget.job_id,
-                                    ),
-                          ))
-                      },
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => GetMap(
+                                    job_id: widget.job_id,
+                                  ),
+                                ))
+                          },
                       child: Text(
                         'See Job Location',
                         style: TextStyle(

@@ -1,15 +1,15 @@
 // ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:tubes/navbar.dart';
+import 'package:jobilee/navbar.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:tubes/authentication/authen_service.dart';
-import 'package:tubes/rsc/colors.dart';
+import 'package:jobilee/authentication/authen_service.dart';
+import 'package:jobilee/rsc/colors.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tubes/rsc/log.dart';
+import 'package:jobilee/rsc/log.dart';
 
 class GetMap extends StatefulWidget {
   final String job_id;
@@ -99,23 +99,17 @@ class _GetMapState extends State<GetMap> {
             Navigator.pop(context);
           },
         ),
-        title: Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("$companyNameVal Location"),
-              Container(
-                margin: const EdgeInsets.only(top: 2),
-                child: Text(
-                  addressVal,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
-                )
+        title: Wrap(
+          children: [
+            Text("$companyNameVal Location"),
+            Text(
+              addressVal,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey,
               ),
-            ]
-          )
+            )
+          ],
         ),
       ),
       body: SafeArea(

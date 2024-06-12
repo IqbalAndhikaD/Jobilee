@@ -2,10 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:tubes/authentication/authen_service.dart';
-import 'package:tubes/login.dart';
-import 'package:tubes/navbar.dart';
-import 'package:tubes/rsc/colors.dart';
+import 'package:jobilee/authentication/authen_service.dart';
+import 'package:jobilee/login.dart';
+import 'package:jobilee/navbar.dart';
+import 'package:jobilee/rsc/colors.dart';
 import '../exception/auth_exception.dart';
 
 class Register extends StatefulWidget {
@@ -295,5 +295,4 @@ class _LoginState extends State<Register> {
       ),
     );
   }
-
 }
