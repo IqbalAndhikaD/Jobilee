@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jobilee/loading.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:jobilee/authentication/notification_service.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -8,6 +9,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await NotificationService().init();
   runApp(const MyApp());
 }
 

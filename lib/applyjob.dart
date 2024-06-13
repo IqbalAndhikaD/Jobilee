@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:jobilee/getmap.dart';
 import 'package:jobilee/navbar.dart';
 
-import 'package:jobilee/authentication/authen_service.dart';
 import 'package:jobilee/rsc/colors.dart';
+import 'package:jobilee/authentication/authen_service.dart';
+import 'package:jobilee/authentication/notification_service.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:jobilee/rsc/log.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class ApplyJob extends StatefulWidget {
   final String job_id;
@@ -21,6 +23,13 @@ class ApplyJob extends StatefulWidget {
 
 class _ApplyJobState extends State<ApplyJob> {
   final user = AuthenService().currentUser;
+  final _androidChannel = const AndroidNotificationChannel(
+    'high_importance_channel',
+    'High Importance Notifications',
+    description: 'This channel is used for important notifications.',
+    importance: Importance.defaultImportance,
+  );
+  final _localNotifications = NotificationService().localNotifications;
   dynamic userInfo;
   dynamic job;
 
@@ -96,11 +105,28 @@ class _ApplyJobState extends State<ApplyJob> {
       await AuthenService().pushNotification('Job applied',
           'Job "${job.get('position')} - ${job.get('company_name')}" has been applied');
       Fluttertoast.showToast(msg: "Job Applied");
+      showNotification('Job Successfully Applied', 'Job "${job.get('position')} - ${job.get('company_name')}" has been applied');
       _applyNotifications(context);
     } catch (e) {
       final errorMsg = e.toString();
       Fluttertoast.showToast(msg: errorMsg);
     }
+  }
+
+  void showNotification (String title, String body) {
+    _localNotifications.show(
+      0,
+      title,
+      body,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          _androidChannel.id,
+          _androidChannel.name,
+          channelDescription: _androidChannel.description,
+          icon: '@drawable/notification_icon',
+        ),
+      ),
+    );
   }
 
   @override
