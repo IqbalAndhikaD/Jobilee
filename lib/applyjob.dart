@@ -114,8 +114,6 @@ class _ApplyJobState extends State<ApplyJob> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    double screenWidth = width;
-    double stackHeight = height;
 
     return Scaffold(
       body: SafeArea(
@@ -128,8 +126,7 @@ class _ApplyJobState extends State<ApplyJob> {
               margin: EdgeInsets.only(top: height * 0.25),
               child: Container(
                 child: SizedBox(
-                  width: screenWidth,
-                  height: stackHeight,
+                  width: width,
                   child: Wrap(
                     children: [
                       Padding(
@@ -434,7 +431,7 @@ class _ApplyJobState extends State<ApplyJob> {
                                       ConnectionState.done) {
                                     return SizedBox(
                                       height: res.data!.docs.isEmpty
-                                          ? height * 0.32
+                                          ? height * 0.3
                                           : height * 0.35,
                                       child: SingleChildScrollView(
                                         child: Padding(
