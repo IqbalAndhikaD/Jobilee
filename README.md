@@ -1,3 +1,5 @@
+![alt text](https://github.com/IqbalAndhikaD/Jobilee/blob/master/assets/Portofolio%20Jobilee.png?raw=true)
+
 # Jobilee 🚀
 
 **Jobilee** adalah aplikasi mobile berbasis Flutter yang dirancang untuk mempermudah pencarian kerja dan manajemen lamaran. Aplikasi ini menghubungkan pencari kerja dengan berbagai peluang karir dari berbagai perusahaan secara efisien.
