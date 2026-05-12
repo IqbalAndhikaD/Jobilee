@@ -12,8 +12,7 @@ import 'package:jobilee/authentication/authen_service.dart';
 import 'package:jobilee/rsc/colors.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class editProfile extends StatefulWidget {
   final String currentProfilePic;
@@ -36,6 +35,7 @@ class _editProfileState extends State<editProfile> {
   final TextEditingController _password = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+  final _supabase = Supabase.instance.client;
   final user = AuthenService().currentUser;
   dynamic userInfo;
 
@@ -52,13 +52,12 @@ class _editProfileState extends State<editProfile> {
     AppLog.info('${_username.text} ${_password.text}');
     try {
       if (_username.text != '') {
+        // Update display name in Firebase Auth
         await user!.updateDisplayName(_username.text);
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user!.uid)
-            .update({
-          'username': _username.text,
-        });
+        // Update username in Supabase
+        await _supabase
+            .from('users')
+            .update({'username': _username.text}).eq('id', user!.uid);
       }
       if (_password.text != '') {
         await user!.updatePassword(_password.text);
@@ -72,33 +71,44 @@ class _editProfileState extends State<editProfile> {
   }
 
   Future<void> uploadProfilePicture() async {
-    if (_image != null) {
-      var imageName = DateTime.now().millisecondsSinceEpoch.toString();
-      var storageRef = FirebaseStorage.instance
-          .ref()
-          .child('profile_pic/${user!.uid}/$imageName.jpg');
-      var uploadTask = storageRef.putFile(_image!);
-      var downloadUrl = await (await uploadTask).ref.getDownloadURL();
-
-      try {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user!.uid)
-            .update({
-          'profile_pic': downloadUrl,
-        });
-        Fluttertoast.showToast(msg: "Profile picture updated");
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const NavBar(index: 4),
-            ));
-      } catch (e) {
-        final errorMsg = e.toString();
-        Fluttertoast.showToast(msg: errorMsg);
-      }
-    } else {
+    if (_image == null) {
       Fluttertoast.showToast(msg: "No image selected");
+      return;
+    }
+
+    try {
+      final uid = user!.uid;
+      final imageName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final storagePath = '$uid/$imageName';
+
+      final bytes = await _image!.readAsBytes();
+
+      // Upload ke Supabase Storage
+      await _supabase.storage
+          .from('profile-pics')
+          .uploadBinary(storagePath, bytes,
+              fileOptions: const FileOptions(contentType: 'image/jpeg'));
+
+      // Dapatkan public URL
+      final downloadUrl = _supabase.storage
+          .from('profile-pics')
+          .getPublicUrl(storagePath);
+
+      // Update URL di tabel users Supabase
+      await _supabase
+          .from('users')
+          .update({'profile_pic': downloadUrl}).eq('id', uid);
+
+      Fluttertoast.showToast(msg: "Profile picture updated");
+      Navigator.pushReplacement(
+          // ignore: use_build_context_synchronously
+          context,
+          MaterialPageRoute(
+            builder: (context) => const NavBar(index: 4),
+          ));
+    } catch (e) {
+      final errorMsg = e.toString();
+      Fluttertoast.showToast(msg: errorMsg);
     }
   }
 
@@ -106,7 +116,7 @@ class _editProfileState extends State<editProfile> {
   void initState() {
     super.initState();
     getUserInfo();
-    _formKey.currentState?.validate(); // call validate here
+    _formKey.currentState?.validate();
   }
 
   final ImagePicker _picker = ImagePicker();
@@ -117,7 +127,6 @@ class _editProfileState extends State<editProfile> {
       setState(() {
         _image = File(pickedFile.path);
       });
-
       uploadProfilePicture();
     }
   }
@@ -264,7 +273,7 @@ class _editProfileState extends State<editProfile> {
                             fontFamily: 'GreycliffCF'),
                       ),
                     ]),
-                // First-Name Field
+                // Username Field
                 TextFormField(
                   controller: _username,
                   validator: (text) {
@@ -296,7 +305,7 @@ class _editProfileState extends State<editProfile> {
                             fontFamily: 'GreycliffCF'),
                       ),
                     ]),
-                // First-Name Field
+                // Password Field
                 TextFormField(
                   controller: _password,
                   obscureText: true,
@@ -311,7 +320,7 @@ class _editProfileState extends State<editProfile> {
                   height: 16,
                 ),
 
-                //Button Edit Profile
+                //Button Save
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 0.0, vertical: 5),

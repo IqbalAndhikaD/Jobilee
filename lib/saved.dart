@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
-
 import 'package:jobilee/authentication/authen_service.dart';
 import 'package:jobilee/notification.dart';
 import 'package:jobilee/rsc/colors.dart';
-
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:jobilee/services/job_service.dart';
 
 class Saved extends StatefulWidget {
   const Saved({super.key});
@@ -32,276 +30,182 @@ class _SavedState extends State<Saved> {
     }
   }
 
-  Future<QuerySnapshot> getData() async {
-    // where user_id == user.uid
-    Query<Map<String, dynamic>> jobSaved = FirebaseFirestore.instance
-        .collection("job_saved")
-        .where('user_id', isEqualTo: user!.uid);
-
-    return jobSaved.get();
+  Future<List<Map<String, dynamic>>> getData() async {
+    return JobService.getSavedJobs(user!.uid);
   }
 
-  Future<DocumentSnapshot<Map<String, dynamic>>> getJobVacationData(
-      String jobVacationId) async {
-    DocumentReference<Map<String, dynamic>> jobVacations = FirebaseFirestore
-        .instance
-        .collection("job_vacations")
-        .doc(jobVacationId);
-
-    return jobVacations.get();
+  Future<bool> _isJobSaved(String jobId) async {
+    return JobService.isJobSaved(user!.uid, jobId);
   }
 
-  Future<QuerySnapshot> _isJobSaved(
-    String jobId,
-  ) async {
-    Query<Map<String, dynamic>> savedJobs = FirebaseFirestore.instance
-        .collection("job_saved")
-        .where('user_id', isEqualTo: user!.uid)
-        .where('job_vacation_id', isEqualTo: jobId);
-
-    return await savedJobs.get();
-  }
-
-  Future<void> _saveJob(
-    String jobId,
-  ) async {
-    CollectionReference savedJobs =
-        FirebaseFirestore.instance.collection("job_saved");
-    QuerySnapshot res = await _isJobSaved(jobId);
-    DocumentSnapshot job = await getJobVacationData(jobId);
-
+  Future<void> _saveJob(String jobId) async {
+    final job = await JobService.getJobById(jobId);
+    final isSaved = await _isJobSaved(jobId);
     try {
-      if (res.docs.isNotEmpty) {
-        await savedJobs.doc(res.docs[0].id).delete();
+      if (isSaved) {
+        await JobService.unsaveJob(user!.uid, jobId);
         await AuthenService().pushNotification('Job successfully unsaved',
-            'Job "${job.get('position')} - ${job.get('company_name')}" has been unsaved');
+            'Job "${job?['title']} - ${job?['company']}" has been unsaved');
         Fluttertoast.showToast(msg: "Job Unsaved");
       } else {
-        await savedJobs.add({
-          'user_id': user!.uid,
-          'job_vacation_id': jobId,
-        });
+        await JobService.saveJob(user!.uid, jobId);
         await AuthenService().pushNotification('Job successfully saved',
-            'Job "${job.get('position')} - ${job.get('company_name')}" has been saved');
+            'Job "${job?['title']} - ${job?['company']}" has been saved');
         Fluttertoast.showToast(msg: "Job Saved");
       }
     } catch (e) {
-      final errorMsg = e.toString();
-      Fluttertoast.showToast(msg: errorMsg);
+      Fluttertoast.showToast(msg: e.toString());
     }
   }
 
-  bool searchJob(AsyncSnapshot<DocumentSnapshot<Object?>> job, String? search) {
-    if (search != null) {
-      return job.data!.get('company_name').toLowerCase().contains(search) ||
-          job.data!.get('position').toLowerCase().contains(search) ||
-          job.data!.get('contract').toLowerCase().contains(search);
+  bool searchJob(Map<String, dynamic>? job, String? search) {
+    if (job == null) return false;
+    if (search != null && search.isNotEmpty) {
+      return (job['company'] ?? '').toLowerCase().contains(search) ||
+          (job['title'] ?? '').toLowerCase().contains(search) ||
+          (job['location'] ?? '').toLowerCase().contains(search);
     }
-
-    return false;
+    return true;
   }
 
   Widget _savedJobsList(String? search) {
-    return FutureBuilder(
+    return FutureBuilder<List<Map<String, dynamic>>>(
       future: getData(),
-      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+      builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
+          final savedRows = snapshot.data ?? [];
           return ListView(
-            children: snapshot.data!.docs
-                .map((doc) => FutureBuilder(
-                    future: getJobVacationData(doc.get('job_vacation_id')),
-                    builder: (context, AsyncSnapshot<DocumentSnapshot> res) {
-                      if (res.connectionState == ConnectionState.done) {
-                        if (searchJob(res, search) || search == '') {
-                          return Card(
-                              color: Colors.white,
-                              elevation: 0,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 12),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+            children: savedRows.map((savedRow) {
+              final jobId = savedRow['job_id'] as String;
+              return FutureBuilder<Map<String, dynamic>?>(
+                future: JobService.getJobById(jobId),
+                builder: (context, res) {
+                  if (res.connectionState == ConnectionState.done) {
+                    final job = res.data;
+                    if (job == null || !searchJob(job, search))
+                      return Container();
+                    return Card(
+                      color: Colors.white,
+                      elevation: 0,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.grey[200]),
+                              padding: const EdgeInsets.all(8),
+                              child: Image.network(
+                                  job['logo'] ?? '',
+                                  height: 35,
+                                  width: 35,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Icon(Icons.business, size: 35)),
+                            ),
+                            Flexible(
+                              child: ListTile(
+                                title: Text(job['title'] ?? '',
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: base,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'GreycliffCF')),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(12),
-                                        color: Colors.grey[200],
-                                      ),
-                                      padding: const EdgeInsets.all(8),
-                                      child: Image(
-                                        image: NetworkImage(
-                                            res.data!.get('company_img')),
-                                        height: 35,
-                                        width: 35,
-                                      ),
-                                    ),
-                                    Flexible(
-                                      child: ListTile(
-                                          title: Text(
-                                            res.data!.get('position'),
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                color: base,
-                                                fontWeight: FontWeight.bold,
-                                                fontFamily: 'GreycliffCF'),
-                                          ),
-                                          subtitle: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                res.data!.get('company_name'),
+                                    Text(job['company'] ?? '',
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: base,
+                                            fontWeight: FontWeight.normal,
+                                            fontFamily: 'GreycliffCF')),
+                                    const SizedBox(height: 6),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 4),
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                              color: dpurple),
+                                          child: Text(job['contract'] ?? '',
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 9,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'GreycliffCF')),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 4),
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                                color: yellow),
+                                            child: Text(job['work_type'] ?? '',
                                                 style: TextStyle(
-                                                    fontSize: 12,
                                                     color: base,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    fontFamily: 'GreycliffCF'),
-                                              ),
-                                              const SizedBox(height: 6),
-                                              Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  Column(
-                                                    children: [
-                                                      Container(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                                horizontal: 8,
-                                                                vertical: 4),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(4),
-                                                          color: dpurple,
-                                                        ),
-                                                        child: Text(
-                                                          res.data!
-                                                              .get('contract'),
-                                                          style: const TextStyle(
-                                                              color:
-                                                                  Colors.white,
-                                                              fontSize: 9,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              fontFamily:
-                                                                  'GreycliffCF'),
-                                                        ),
-                                                      )
-                                                    ],
-                                                  ),
-                                                  Padding(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 4),
-                                                    child: Container(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 8,
-                                                          vertical: 4),
-                                                      decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(4),
-                                                        color: yellow,
-                                                      ),
-                                                      child: Text(
-                                                        res.data!
-                                                            .get('work_type'),
-                                                        style: TextStyle(
-                                                            color: base,
-                                                            fontSize: 9,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontFamily:
-                                                                'GreycliffCF'),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontFamily: 'GreycliffCF')),
                                           ),
-                                          trailing: Wrap(
-                                            crossAxisAlignment:
-                                                WrapCrossAlignment.center,
-                                            alignment:
-                                                WrapAlignment.spaceBetween,
-                                            direction: Axis.horizontal,
-                                            children: [
-                                              Column(
-                                                children: [
-                                                  Ink(
-                                                    width: 40,
-                                                    height: 40,
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      color: bblue,
-                                                    ),
-                                                    child: IconButton(
-                                                        icon: FutureBuilder(
-                                                            future: _isJobSaved(
-                                                                doc.get(
-                                                                    'job_vacation_id')),
-                                                            builder: (context,
-                                                                AsyncSnapshot<
-                                                                        QuerySnapshot>
-                                                                    res) {
-                                                              if (res.connectionState ==
-                                                                  ConnectionState
-                                                                      .done) {
-                                                                return Icon(res
-                                                                        .data!
-                                                                        .docs
-                                                                        .isNotEmpty
-                                                                    ? Icons
-                                                                        .bookmark
-                                                                    : Icons
-                                                                        .bookmark_border_outlined);
-                                                              } else if (snapshot
-                                                                      .connectionState ==
-                                                                  ConnectionState
-                                                                      .none) {
-                                                                return const Text(
-                                                                    "No data");
-                                                              }
-                                                              return const CircularProgressIndicator();
-                                                            }),
-                                                        color: lblue,
-                                                        iconSize: 20,
-                                                        onPressed: () async {
-                                                          await _saveJob(doc.get(
-                                                              'job_vacation_id'));
-                                                          setState(() {});
-                                                        }),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          )),
-                                    )
+                                        ),
+                                      ],
+                                    ),
                                   ],
                                 ),
-                              ));
-                        }
-
-                        return Container();
-                      } else if (snapshot.connectionState ==
-                          ConnectionState.none) {
-                        return const Text("No data");
-                      }
-                      return const CircularProgressIndicator();
-                    }))
-                .toList(),
+                                trailing: FutureBuilder<bool>(
+                                  future: _isJobSaved(jobId),
+                                  builder: (context, savedRes) {
+                                    final saved = savedRes.data ?? true;
+                                    if (savedRes.connectionState ==
+                                        ConnectionState.done) {
+                                      return Ink(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: bblue),
+                                        child: IconButton(
+                                          icon: Icon(saved
+                                              ? Icons.bookmark
+                                              : Icons.bookmark_border_outlined),
+                                          color: lblue,
+                                          iconSize: 20,
+                                          onPressed: () async {
+                                            await _saveJob(jobId);
+                                            setState(() {});
+                                          },
+                                        ),
+                                      );
+                                    }
+                                    return const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 2));
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                  return const LinearProgressIndicator();
+                },
+              );
+            }).toList(),
           );
-        } else if (snapshot.connectionState == ConnectionState.none) {
-          return const Text("No data");
         }
-        return const CircularProgressIndicator();
+        return const Center(child: CircularProgressIndicator());
       },
     );
   }
@@ -314,13 +218,13 @@ class _SavedState extends State<Saved> {
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController _search = TextEditingController();
-    final _formKey = GlobalKey<FormState>();
+    final TextEditingController search = TextEditingController();
+    final formKey = GlobalKey<FormState>();
 
     return Scaffold(
       body: SafeArea(
           child: Form(
-              key: _formKey,
+              key: formKey,
               child: Container(
                   padding: const EdgeInsets.all(12),
                   child: Column(
@@ -438,7 +342,7 @@ class _SavedState extends State<Saved> {
                               SizedBox(
                                 height: 40,
                                 child: TextFormField(
-                                  controller: _search,
+                                  controller: search,
                                   style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.grey[800],
@@ -478,19 +382,19 @@ class _SavedState extends State<Saved> {
                               child: TextButton(
                                 onPressed: () {
                                   setState(() {
-                                    searchVal = _search.text;
+                                    searchVal = search.text;
                                   });
                                 },
-                                child: Icon(
-                                  Icons.search,
-                                  color: bblue,
-                                ),
                                 style: TextButton.styleFrom(
-                                  padding: EdgeInsets.all(9),
+                                  padding: const EdgeInsets.all(9),
                                   backgroundColor: lblue,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(999),
                                   ),
+                                ),
+                                child: Icon(
+                                  Icons.search,
+                                  color: bblue,
                                 ),
                               ),
                             )

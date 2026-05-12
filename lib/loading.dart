@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:jobilee/login.dart';
 import 'package:jobilee/navbar.dart';
 import 'package:jobilee/rsc/colors.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:jobilee/authentication/authen_service.dart';
 
 class Loading extends StatefulWidget {
@@ -19,7 +18,7 @@ class _LoadingState extends State<Loading> {
   var userInfo = AuthenService().userInfo;
 
   checkIfLogin() async {
-    AuthenService().authStateChanges.listen((User? user) async {
+    AuthenService().authStateChanges.listen((user) async {
       if (user == null) {
         setState(() {
           isLogin = false;

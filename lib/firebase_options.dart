@@ -4,44 +4,18 @@ import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
-/// Default [FirebaseOptions] for use with your Firebase apps.
-///
-/// Example:
-/// ```dart
-/// import 'firebase_options.dart';
-/// // ...
-/// await Firebase.initializeApp(
-///   options: DefaultFirebaseOptions.currentPlatform,
-/// );
-/// ```
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
-      case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
-      case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
-      case TargetPlatform.linux:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for linux - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       default:
         throw UnsupportedError(
           'DefaultFirebaseOptions are not supported for this platform.',
@@ -49,23 +23,19 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDeUY6e4vV7Om-H4UTFNC5ZbPc-TliZwns',
-    appId: '1:691096045938:web:966681dba333bf99f1f5eb',
-    messagingSenderId: '691096045938',
-    projectId: 'jobilee-9c76b',
-    authDomain: 'jobilee-9c76b.firebaseapp.com',
-    databaseURL: 'https://jobilee-9c76b-default-rtdb.asia-southeast1.firebasedatabase.app',
-    storageBucket: 'jobilee-9c76b.appspot.com',
-    measurementId: 'G-826EXDC8F9',
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyDWittLaG1NKYsXNmOqQQzgB1_xpP9Ea4I',
+    appId: '1:154333719617:android:beb4754234e539098aeac0',
+    messagingSenderId: '154333719617',
+    projectId: 'jobilee-7a95e',
+    storageBucket: 'jobilee-7a95e.firebasestorage.app',
   );
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCnxAWxCA5gxFI2HV4DWf_Ag7vsaB498z4',
-    appId: '1:691096045938:android:13dd41c1cb5ee698f1f5eb',
-    messagingSenderId: '691096045938',
-    projectId: 'jobilee-9c76b',
-    databaseURL: 'https://jobilee-9c76b-default-rtdb.asia-southeast1.firebasedatabase.app',
-    storageBucket: 'jobilee-9c76b.appspot.com',
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyBaOh0oV7Qzl6HMKx-zKsJXxF5gOPtrc1I',
+    appId: '1:154333719617:ios:f0cf9af988f2f9a58aeac0',
+    messagingSenderId: '154333719617',
+    projectId: 'jobilee-7a95e',
+    storageBucket: 'jobilee-7a95e.firebasestorage.app',
   );
 }

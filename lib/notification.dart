@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:jobilee/authentication/authen_service.dart';
 import 'package:jobilee/rsc/colors.dart';
-
-import 'package:firebase_database/firebase_database.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Notif extends StatefulWidget {
   const Notif({super.key});
@@ -13,10 +12,39 @@ class Notif extends StatefulWidget {
 }
 
 class _NotifState extends State<Notif> {
+  final _supabase = Supabase.instance.client;
   final user = AuthenService().currentUser;
-  final notificationRef = FirebaseDatabase.instance
-      .ref('notifications/${AuthenService().currentUser!.uid}')
-      .orderByChild('datetime');
+  List<NotificationItem> _notifications = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadNotifications();
+  }
+
+  Future<void> _loadNotifications() async {
+    if (user == null) return;
+    try {
+      final data = await _supabase
+          .from('notifications')
+          .select()
+          .eq('user_id', user!.uid)
+          .order('datetime', ascending: false);
+
+      setState(() {
+        _notifications = (data as List)
+            .map((item) => NotificationItem(
+                  title: item['title'] ?? '',
+                  msg: item['msg'] ?? '',
+                ))
+            .toList();
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,62 +59,37 @@ class _NotifState extends State<Notif> {
               fontFamily: 'GreycliffCF'),
         ),
       ),
-      body: StreamBuilder<DatabaseEvent>(
-        stream: notificationRef.onValue,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final data =
-                snapshot.data!.snapshot.value as Map<dynamic, dynamic>?;
-            if (data != null) {
-              final List<Notification> notifications =
-                  data.entries.map((entry) {
-                final value = entry.value as Map<dynamic, dynamic>;
-                return Notification(
-                  title: value['title'],
-                  msg: value['msg'],
-                );
-              }).toList();
-
-              return ListView.builder(
-                itemCount: notifications.length,
-                itemBuilder: (context, index) {
-                  final notification = notifications[index];
-                  return Column(children: [
-                    ListTile(
-                      leading: Icon(
-                        Icons.notifications,
-                        color: yellow,
-                      ),
-                      title: Text(notification.title),
-                      subtitle: Text(notification.msg),
-                    ),
-                    const Divider(height: 1, color: Colors.grey),
-                  ]);
-                },
-              );
-            } else {
-              return const Center(
-                child: Text('No notifications'),
-              );
-            }
-          } else if (snapshot.hasError) {
-            return const Center(
-              child: Text('Error loading notifications'),
-            );
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
-      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _notifications.isEmpty
+              ? const Center(child: Text('No notifications'))
+              : RefreshIndicator(
+                  onRefresh: _loadNotifications,
+                  child: ListView.builder(
+                    itemCount: _notifications.length,
+                    itemBuilder: (context, index) {
+                      final notification = _notifications[index];
+                      return Column(children: [
+                        ListTile(
+                          leading: Icon(
+                            Icons.notifications,
+                            color: yellow,
+                          ),
+                          title: Text(notification.title),
+                          subtitle: Text(notification.msg),
+                        ),
+                        const Divider(height: 1, color: Colors.grey),
+                      ]);
+                    },
+                  ),
+                ),
     );
   }
 }
 
-class Notification {
+class NotificationItem {
   final String title;
   final String msg;
 
-  Notification({required this.title, required this.msg});
+  NotificationItem({required this.title, required this.msg});
 }

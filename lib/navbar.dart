@@ -42,7 +42,7 @@ class _NavBarState extends State<NavBar> {
         data: NavigationBarThemeData(
           indicatorColor: lblue,
           labelTextStyle:
-              MaterialStateProperty.all(const TextStyle(fontSize: 0)),
+              WidgetStateProperty.all(const TextStyle(fontSize: 0)),
         ),
         child: NavigationBar(
           height: 60,

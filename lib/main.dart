@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:jobilee/loading.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:jobilee/authentication/notification_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'firebase_options.dart';
+import 'supabase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
+  );
+  await Supabase.initialize(
+    url: SupabaseOptions.url,
+    anonKey: SupabaseOptions.anonKey,
   );
   await NotificationService().init();
   runApp(const MyApp());

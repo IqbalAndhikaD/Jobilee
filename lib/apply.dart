@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:jobilee/applyjob.dart';
 import 'package:flutter_profile_picture/flutter_profile_picture.dart';
-
 import 'package:jobilee/authentication/authen_service.dart';
 import 'package:jobilee/notification.dart';
 import 'package:jobilee/rsc/colors.dart';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:jobilee/services/job_service.dart';
 
 class Apply extends StatefulWidget {
   const Apply({super.key});
@@ -32,23 +30,18 @@ class _ApplyState extends State<Apply> {
     }
   }
 
-  Future<QuerySnapshot> getData() async {
-    // where user_id == user.uid
-    Query<Map<String, dynamic>> jobApplications = FirebaseFirestore.instance
-        .collection("job_applications")
-        .where('user_id', isEqualTo: user!.uid);
-
-    return jobApplications.get();
+  Future<List<Map<String, dynamic>>> getData() async {
+    return JobService.getMyApplications(user!.uid);
   }
 
-  Future<DocumentSnapshot<Map<String, dynamic>>> getJobVacationData(
-      String jobVacationId) async {
-    DocumentReference<Map<String, dynamic>> jobVacations = FirebaseFirestore
-        .instance
-        .collection("job_vacations")
-        .doc(jobVacationId);
-
-    return jobVacations.get();
+  bool searchJobData(Map<String, dynamic>? job, String? search) {
+    if (job == null) return false;
+    if (search != null && search.isNotEmpty) {
+      return (job['company'] ?? '').toLowerCase().contains(search) ||     // ✅ was: company_name
+          (job['title'] ?? '').toLowerCase().contains(search) ||           // ✅ was: position
+          (job['location'] ?? '').toLowerCase().contains(search);          // ✅ was: contract
+    }
+    return true;
   }
 
   Color _getStatusTextColor(String status) {
@@ -77,175 +70,121 @@ class _ApplyState extends State<Apply> {
     }
   }
 
-  bool searchJob(AsyncSnapshot<DocumentSnapshot<Object?>> job, String? search) {
-    if (search != null) {
-      return job.data!.get('company_name').toLowerCase().contains(search) ||
-          job.data!.get('position').toLowerCase().contains(search) ||
-          job.data!.get('contract').toLowerCase().contains(search);
-    }
-
-    return false;
-  }
-
   Widget _jobApplicationsList(String? search) {
-    return FutureBuilder(
+    return FutureBuilder<List<Map<String, dynamic>>>(
       future: getData(),
-      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+      builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
+          final applications = snapshot.data ?? [];
           return ListView(
-            children: snapshot.data!.docs
-                .map((doc) => FutureBuilder(
-                    future: getJobVacationData(doc.get('job_vacation_id')),
-                    builder: (context, AsyncSnapshot<DocumentSnapshot> res) {
-                      if (res.connectionState == ConnectionState.done) {
-                        if (searchJob(res, search) || search == '') {
-                          return Card(
-                              color: Colors.white,
-                              elevation: 0,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 12),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+            children: applications.map((appRow) {
+              final jobId = appRow['job_id'] as String; // ✅ was: job_vacation_id
+              return FutureBuilder<Map<String, dynamic>?>(
+                future: JobService.getJobById(jobId),
+                builder: (context, res) {
+                  if (res.connectionState == ConnectionState.done) {
+                    final job = res.data;
+                    if (job == null || !searchJobData(job, search))
+                      return Container();
+                    return Card(
+                      color: Colors.white,
+                      elevation: 0,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.grey[200]),
+                              padding: const EdgeInsets.all(8),
+                              child: Image.network(
+                                job['logo'] ?? '', // ✅ was: company_img — online URL from DB
+                                height: 35,
+                                width: 35,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(Icons.business, size: 35),
+                              ),
+                            ),
+                            Flexible(
+                              child: ListTile(
+                                title: Text(job['title'] ?? '',  // ✅ was: position
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: base,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'GreycliffCF')),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    Text(job['company'] ?? '',  // ✅ was: company_name
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: base,
+                                            fontWeight: FontWeight.normal,
+                                            fontFamily: 'GreycliffCF')),
+                                    const SizedBox(height: 6),
                                     Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 4),
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(12),
-                                        color: Colors.grey[200],
+                                        borderRadius: BorderRadius.circular(4),
+                                        color: _getStatusBGColor(
+                                            appRow['status'] ?? ''),
                                       ),
-                                      padding: const EdgeInsets.all(8),
-                                      child: Image(
-                                        image: NetworkImage(
-                                          res.data!.get('company_img'),
-                                        ),
-                                        height: 35,
-                                        width: 35,
+                                      child: Text(
+                                        appRow['status'] ?? '',
+                                        style: TextStyle(
+                                            color: _getStatusTextColor(
+                                                appRow['status'] ?? ''),
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'GreycliffCF'),
                                       ),
-                                    ),
-                                    Flexible(
-                                      child: ListTile(
-                                          title: Text(
-                                            res.data!.get('position'),
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                color: base,
-                                                fontWeight: FontWeight.bold,
-                                                fontFamily: 'GreycliffCF'),
-                                          ),
-                                          subtitle: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                res.data!.get('company_name'),
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: base,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    fontFamily: 'GreycliffCF'),
-                                              ),
-                                              const SizedBox(height: 6),
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 8,
-                                                        vertical: 4),
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(4),
-                                                  color: _getStatusBGColor(
-                                                      doc.get('status')),
-                                                ),
-                                                child: Text(
-                                                  doc.get('status'),
-                                                  style: TextStyle(
-                                                      color:
-                                                          _getStatusTextColor(
-                                                              doc.get(
-                                                                  'status')),
-                                                      fontSize: 9,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontFamily:
-                                                          'GreycliffCF'),
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                          trailing: Wrap(
-                                            crossAxisAlignment:
-                                                WrapCrossAlignment.center,
-                                            alignment:
-                                                WrapAlignment.spaceBetween,
-                                            direction: Axis.horizontal,
-                                            children: [
-                                              Column(
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            right: 8),
-                                                    child: TextButton(
-                                                      style:
-                                                          TextButton.styleFrom(
-                                                        backgroundColor: lblue,
-                                                        shape:
-                                                            RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(20),
-                                                        ),
-                                                        minimumSize:
-                                                            const Size(60, 0),
-                                                      ),
-                                                      onPressed: () {
-                                                        Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  ApplyJob(
-                                                                      job_id: doc
-                                                                          .get(
-                                                                              'job_vacation_id')),
-                                                            ));
-                                                      },
-                                                      child: const Text(
-                                                        'See Details',
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontFamily:
-                                                                'GreycliffCF',
-                                                            fontSize: 10,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w600),
-                                                      ),
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                            ],
-                                          )),
                                     )
                                   ],
                                 ),
-                              ));
-                        }
-
-                        return Container();
-                      } else if (snapshot.connectionState ==
-                          ConnectionState.none) {
-                        return const Text("No data");
-                      }
-                      return const CircularProgressIndicator();
-                    }))
-                .toList(),
+                                trailing: Padding(
+                                  padding: const EdgeInsets.only(right: 8),
+                                  child: TextButton(
+                                    style: TextButton.styleFrom(
+                                      backgroundColor: lblue,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      minimumSize: const Size(60, 0),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => ApplyJob(
+                                                job_vacation_id: jobId),
+                                          ));
+                                    },
+                                    child: const Text('See Details',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontFamily: 'GreycliffCF',
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w600)),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                  return const LinearProgressIndicator();
+                },
+              );
+            }).toList(),
           );
-        } else if (snapshot.connectionState == ConnectionState.none) {
-          return const Text("No data");
         }
-        return const CircularProgressIndicator();
+        return const Center(child: CircularProgressIndicator());
       },
     );
   }
@@ -258,8 +197,8 @@ class _ApplyState extends State<Apply> {
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController _search = TextEditingController();
-    final _formKey = GlobalKey<FormState>();
+    final TextEditingController search = TextEditingController();
+    final formKey = GlobalKey<FormState>();
 
     return Scaffold(
       body: SafeArea(
@@ -290,7 +229,6 @@ class _ApplyState extends State<Apply> {
 
                         //Nama & Graduate
                         Container(
-                          //color: Colors.red.withOpacity(0.2),
                           margin: const EdgeInsets.only(
                               right: 65, left: 85, top: 3, bottom: 0),
                           child: Column(
@@ -312,7 +250,7 @@ class _ApplyState extends State<Apply> {
                                     ]),
                               ),
 
-                              //Gradute
+                              //Graduate
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 14, vertical: 4),
@@ -379,7 +317,7 @@ class _ApplyState extends State<Apply> {
                           SizedBox(
                             height: 40,
                             child: TextFormField(
-                              controller: _search,
+                              controller: search,
                               style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey[800],
@@ -389,7 +327,7 @@ class _ApplyState extends State<Apply> {
                                 fillColor: Colors.grey[200],
                                 border: InputBorder.none,
                                 hintText:
-                                    'Search job, company, post and others...',
+                                    'Search job, company, location and others...',
                                 hintStyle: TextStyle(
                                     color: Colors.grey[600],
                                     fontSize: 14,
@@ -419,19 +357,19 @@ class _ApplyState extends State<Apply> {
                           child: TextButton(
                             onPressed: () {
                               setState(() {
-                                searchVal = _search.text;
+                                searchVal = search.text;
                               });
                             },
-                            child: Icon(
-                              Icons.search,
-                              color: bblue,
-                            ),
                             style: TextButton.styleFrom(
-                              padding: EdgeInsets.all(9),
+                              padding: const EdgeInsets.all(9),
                               backgroundColor: lblue,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(999),
                               ),
+                            ),
+                            child: Icon(
+                              Icons.search,
+                              color: bblue,
                             ),
                           ),
                         )
@@ -441,7 +379,7 @@ class _ApplyState extends State<Apply> {
 
                   const SizedBox(height: 24),
 
-                  // Browse Jobs
+                  // My Applications Title
                   Row(
                     children: [
                       Text(

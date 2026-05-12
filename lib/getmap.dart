@@ -2,18 +2,17 @@
 
 import 'package:flutter/material.dart';
 import 'package:jobilee/navbar.dart';
-
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:jobilee/authentication/authen_service.dart';
 import 'package:jobilee/rsc/colors.dart';
-
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:jobilee/services/job_service.dart';
 import 'package:jobilee/rsc/log.dart';
 
 class GetMap extends StatefulWidget {
-  final String job_id;
-  const GetMap({super.key, required this.job_id});
+  final String job_vacation_id;
+  const GetMap({super.key, required this.job_vacation_id});
 
   @override
   State<GetMap> createState() => _GetMapState();
@@ -21,18 +20,13 @@ class GetMap extends StatefulWidget {
 
 class _GetMapState extends State<GetMap> {
   final user = AuthenService().currentUser;
-  late GoogleMapController mapController;
-  LatLng center = LatLng(-6.892696407681568, 107.61662993337156);
-  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+  late MapController mapController;
+  LatLng center = const LatLng(-6.892696407681568, 107.61662993337156);
+  List<Marker> markers = [];
   dynamic userInfo;
   dynamic job;
   String companyNameVal = '';
   String addressVal = '';
-
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-    getData();
-  }
 
   Future<dynamic> getUserInfo() async {
     var result = await AuthenService().getUserInfo();
@@ -44,49 +38,44 @@ class _GetMapState extends State<GetMap> {
   }
 
   Future<void> getData() async {
-    DocumentReference<Map<String, dynamic>> jobVacation = FirebaseFirestore
-        .instance
-        .collection("job_vacations")
-        .doc(widget.job_id);
-
-    var result = await jobVacation.get();
+    final result = await JobService.getJobById(widget.job_vacation_id);
     AppLog.info(result);
 
+    if (result == null) return;
+
+    final lat = (result['latitude'] as num?)?.toDouble();
+    final lng = (result['longitude'] as num?)?.toDouble();
+
+    if (lat == null || lng == null) return;
+
     final marker = Marker(
-      markerId: MarkerId(result.data()!['company_name']),
-      position: LatLng(result.data()!['location'].latitude,
-          result.data()!['location'].longitude),
-      // icon: BitmapDescriptor.,
-      infoWindow: InfoWindow(
-        title: result.data()!['company_name'],
-        snippet: result.data()!['address'],
+      width: 80.0,
+      height: 80.0,
+      point: LatLng(lat, lng),
+      child: const Icon(
+        Icons.location_on,
+        color: Colors.red,
+        size: 40.0,
       ),
     );
 
     setState(() {
-      companyNameVal = result.data()!['company_name'];
-      addressVal = result.data()!['address'];
-
-      if (result.data()!['location'] != null) {
-        job = result;
-        markers[MarkerId(result.data()!['company_name'])] = marker;
-        center = LatLng(result.data()!['location'].latitude,
-            result.data()!['location'].longitude);
-      }
+      companyNameVal = result['company'] ?? '';
+      addressVal = result['location'] ?? '';
+      job = result;
+      markers = [marker];
+      center = LatLng(lat, lng);
     });
 
-    if (result.data()!['location'] != null) {
-      mapController.animateCamera(CameraUpdate.newLatLngZoom(
-          LatLng(result.data()!['location'].latitude,
-              result.data()!['location'].longitude),
-          17.5));
-    }
+    mapController.move(LatLng(lat, lng), 17.5);
   }
 
   @override
   void initState() {
     super.initState();
+    mapController = MapController();
     getUserInfo();
+    getData();
   }
 
   @override
@@ -94,7 +83,7 @@ class _GetMapState extends State<GetMap> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -104,7 +93,7 @@ class _GetMapState extends State<GetMap> {
             Text("$companyNameVal Location"),
             Text(
               addressVal,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
                 color: Colors.grey,
               ),
@@ -113,13 +102,21 @@ class _GetMapState extends State<GetMap> {
         ),
       ),
       body: SafeArea(
-        child: GoogleMap(
-          onMapCreated: _onMapCreated,
-          initialCameraPosition: CameraPosition(
-            target: center,
-            zoom: 5.0,
+        child: FlutterMap(
+          mapController: mapController,
+          options: MapOptions(
+            initialCenter: center,
+            initialZoom: 5.0,
           ),
-          markers: Set<Marker>.of(markers.values),
+          children: [
+            TileLayer(
+              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              userAgentPackageName: 'com.tubes.jobilee',
+            ),
+            MarkerLayer(
+              markers: markers,
+            ),
+          ],
         ),
       ),
     );
