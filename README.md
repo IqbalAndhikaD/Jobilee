@@ -1,4 +1,4 @@
-![alt text](https://github.com/IqbalAndhikaD/Jobilee/blob/master/assets/Portofolio%20Jobilee.png?raw=true)
+![alt text](https://github.com/IqbalAndhikaD/Jobilee/blob/master/assets/Jobilee%20Porto.png?raw=true)
 
 # Jobilee 🚀
 
